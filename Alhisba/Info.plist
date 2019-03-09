@@ -28,6 +28,11 @@
 	<array>
 		<string>armv7</string>
 	</array>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
@@ -40,6 +45,17 @@
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>UIAppFonts</key>
+	<array>
+		<string>DroidSans-Bold.ttf</string>
+		<string>DroidSans.ttf</string>
+		<string>Droid-Arabic-Kufi.ttf</string>
+		<string>Hacen Tunisia Bd.ttf</string>
+		<string>DroidKufi-Bold.ttf</string>
+		<string>Cairo-Bold.ttf</string>
+		<string>Cairo-Regular.ttf</string>
+		<string>Cairo-SemiBold.ttf</string>
 	</array>
 </dict>
 </plist>
