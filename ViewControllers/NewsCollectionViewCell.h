@@ -16,6 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (weak, nonatomic) IBOutlet UILabel *landlbl;
 @property (weak, nonatomic) IBOutlet UILabel *landLbl1;
 
+@property (weak, nonatomic) IBOutlet UIButton *readMoreBtn;
 
 @end
 

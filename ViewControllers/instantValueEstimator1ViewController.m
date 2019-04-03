@@ -8,13 +8,18 @@
 
 #import "instantValueEstimator1ViewController.h"
 #import "JBWhatsAppActivity.h"
-
 #import <GoogleAnalytics/GAI.h>
 #import <GoogleAnalytics/GAIDictionaryBuilder.h>
 #import <GoogleAnalytics/GAIFields.h>
-@interface instantValueEstimator1ViewController ()<UIScrollViewDelegate>{
+#import "RentCollectionViewCell.h"
+#import "UIImageView+UIActivityIndicatorForSDWebImage.h"
+#import "OfficialApraisalViewController.h"
+
+
+@interface instantValueEstimator1ViewController ()<UIScrollViewDelegate,UICollectionViewDelegate,UICollectionViewDataSource>{
     
     UIButton *menuBtn,*backBtn;
+    NSMutableArray *addsArray;
 }
 
 @end
@@ -88,6 +93,8 @@
     
     _clickHereOfficialBtn.layer.cornerRadius = 15.0f;
     _clickHereOfficialBtn.layer.masksToBounds = YES;
+    
+    [_clickHereOfficialBtn setTitle:Localized(@"Click here for an Official evaluation") forState:UIControlStateNormal];
 
     [_lastUpdateonLbl setTextAlignment:NSTextAlignmentCenter];
     
@@ -109,6 +116,9 @@
 
     
     _areaTitle.text = _areaTitle1.length>0?[NSString stringWithFormat:@"%@",_areaTitle1]:Localized(@"NA");
+    
+    _preViewArea.text = _areaTitle1.length>0?[NSString stringWithFormat:@"%@",_areaTitle1]:Localized(@"NA");
+    
     _landSizeTitle.text = _landSizeTitle1.length>0?[NSString stringWithFormat:@"%@",_landSizeTitle1]:Localized(@"NA");
     _streetTitle.text = _streetTitle1.length>0?[NSString stringWithFormat:@"%@",_streetTitle1]:Localized(@"NA");
     _locationTitle.text =_locationTitle1.length>0?[NSString stringWithFormat:@"%@",_locationTitle1]:Localized(@"NA");
@@ -224,8 +234,58 @@
     //        [self settextAlignment:_previewDirectionLbl];
     //        [self settextAlignment:_previewCurbFld];
     //        [self settextAlignment:_previewDetailsLbl];
-
+    
+    [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"btng.png"] forBarMetrics:UIBarMetricsDefault];
+    
+    [_relatedCollectionView setContentInset:UIEdgeInsetsMake(0, 20, 0, 30)];
+    [_relatedCollectionView reloadData];
+    [self updateCellsLayout];
+    
+    CAGradientLayer *gradientLayer = [CAGradientLayer layer];
+    gradientLayer.frame = self.navigationController.navigationBar.bounds;
+    
+    CGRect gradientFrame = self.navigationController.navigationBar.bounds;
+    gradientFrame.size.height += [UIApplication sharedApplication].statusBarFrame.size.height;
+    gradientLayer.frame = gradientFrame;
+    
+    gradientLayer.colors = @[ (__bridge id)[UIColor colorWithRed:16.0f/255.0f green:35.0f/255.0f blue:71.0f/255.0f alpha:1].CGColor,
+                              (__bridge id)[UIColor colorWithRed:31.0f/255.0f green:71.0f/255.0f blue:147.0f/255.0f alpha:1].CGColor ];
+    //    gradientLayer.startPoint = CGPointMake(1.0, 0);
+    //    gradientLayer.endPoint = CGPointMake(1.0, 0.5);
+    
+    UIGraphicsBeginImageContext(gradientLayer.bounds.size);
+    [gradientLayer renderInContext:UIGraphicsGetCurrentContext()];
+    UIImage *gradientImage1 = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    [self.navigationController.navigationBar setBackgroundImage:gradientImage1 forBarMetrics:UIBarMetricsDefault];
+    
+    [self showHUD:@""];
+    [self makePostCallForPage:ADDS withParams:@{@"type":@"1"} withRequestCode:15];
 }
+
+#pragma Parse Function .......
+
+-(void)parseResult:(id)result withCode:(int)reqeustCode{
+    
+    addsArray = result;
+    [self.relatedCollectionView reloadData];
+    [self hideHUD];
+}
+
+
+- (UIImage *)imageFromLayer:(CALayer *)layer
+{
+    UIGraphicsBeginImageContext([layer frame].size);
+    
+    [layer renderInContext:UIGraphicsGetCurrentContext()];
+    UIImage *outputImage = UIGraphicsGetImageFromCurrentImageContext();
+    
+    UIGraphicsEndImageContext();
+    
+    return outputImage;
+}
+
 -(void)viewWillAppear:(BOOL)animated{
     id<GAITracker> tracker = [GAI sharedInstance].defaultTracker;
     [tracker set:kGAIScreenName value:@"INSTANTVALUE ESTIMATOR RESULT SCREEN"];
@@ -270,6 +330,10 @@
     UIImageView *verticalIndicator = ((UIImageView *)[_scollView.subviews objectAtIndex:(_scollView.subviews.count-1)]);
     //set color to vertical indicator
     [verticalIndicator setBackgroundColor:[UIColor yellowColor]];
+    
+    [super viewWillLayoutSubviews];
+    [self updateCellsLayout];
+
 }
 
 
@@ -285,5 +349,126 @@
 
 
 - (IBAction)clickhereOfficialBtnTapped:(id)sender {
+    
+    OfficialApraisalViewController *obj = [self.storyboard instantiateViewControllerWithIdentifier:@"OfficialApraisalViewController"];
+    [self.navigationController pushViewController:obj animated:YES];
 }
+
+
+#pragma CollectionView Delegate & Data Souce Methods...
+
+- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
+    //return resultArray.count;
+    
+    return 10;
+}
+
+- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
+    
+        RentCollectionViewCell *cell = [self.relatedCollectionView dequeueReusableCellWithReuseIdentifier:@"RentCollectionViewCell" forIndexPath:indexPath];
+        
+        //    cell.layer.borderColor = [UIColor colorWithRed:230.0f/250.0f green:230.0f/250.0f blue:230.0f/250.0f alpha:1.0f].CGColor;
+        //        cell.layer.borderWidth= 2.0f;
+        //        cell.layer.cornerRadius = 15.0f;
+        //        cell.layer.masksToBounds= YES;
+        
+        cell.areaTitleBackView.layer.cornerRadius = 15.0f;
+        cell.areaTitleBackView.layer.masksToBounds = YES;
+    
+        cell.contentView.layer.cornerRadius = 15.0f;
+        cell.contentView.layer.borderWidth = 5.0f;
+        cell.contentView.layer.borderColor = [UIColor clearColor].CGColor;
+        cell.contentView.layer.masksToBounds = YES;
+        
+        cell.layer.shadowColor = [UIColor blackColor].CGColor;
+        cell.layer.shadowOffset = CGSizeMake(0, 2.0f);
+        cell.layer.shadowRadius = 2.0f;
+        cell.layer.shadowOpacity = 0.5f;
+        cell.layer.masksToBounds = NO;
+        cell.layer.shadowPath = [UIBezierPath bezierPathWithRoundedRect:cell.bounds cornerRadius:cell.contentView.layer.cornerRadius].CGPath;
+    
+    NSMutableDictionary *dic = [addsArray objectAtIndex:indexPath.row];
+    
+    [cell.salesImage setImageWithURL:[dic valueForKey:@"images"][0] usingActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    
+    NSString *st = [dic valueForKey:@"price_1"];
+    
+  //  cell.priceLbl.text = [NSString stringWithFormat:@"%@",[NSString stringWithFormat:@"%0.2f %@", st.floatValue,Localized(@"KD")]];
+    
+    cell.priceLbl.text = [NSString stringWithFormat:@"%@",[NSString stringWithFormat:@"%0.2f", st.floatValue]];
+    
+    cell.areaSizeLbl.text = [NSString stringWithFormat:@"%@",[dic valueForKey:@"plot_size"]];
+    
+    if ([[Utils getLanguage] isEqualToString:KEY_LANGUAGE_AR]) {
+        cell.landInfo.text = [[dic valueForKey:@"area_id"] valueForKey:@"value_arabic"];
+        
+        cell.landlbl.text = [[dic valueForKey:@"property_type_id"] valueForKey:@"value_arabic"];
+     
+        cell.areaTitleLbl.text = [[dic valueForKey:@"area_id"] valueForKey:@"value_arabic"];
+    }
+    else{
+        cell.landInfo.text = [[dic valueForKey:@"area_id"] valueForKey:@"value_english"];
+        
+        cell.landlbl.text = [[dic valueForKey:@"property_type_id"] valueForKey:@"value_english"];
+        
+        cell.areaTitleLbl.text = [[dic valueForKey:@"area_id"] valueForKey:@"value_arabic"];
+
+    }
+    
+    cell.kuwaitDinarLbl.text = Localized(@"Kuwait Dinar");
+    cell.areaSize.text = Localized(@"Area Size");
+    cell.bathroomLbl.text = Localized(@"Bathrooms");
+    
+        return cell;
+}
+
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
+
+{
+    
+}
+
+- (CGSize)collectionView:(UICollectionView *)collectionView
+                  layout:(UICollectionViewLayout *)collectionViewLayout
+  sizeForItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    
+    //   return  CGSizeMake(collectionView.frame.size.width-100, 200+160);
+    CGSize cellSize = collectionView.bounds.size;
+    cellSize.width -= collectionView.contentInset.left * 2;
+    cellSize.width -= collectionView.contentInset.right * 2;
+    //cellSize.width = collectionView.frame.size.width-120;
+    cellSize.height = 330;
+    // cellSize.height = 200+160;
+    return cellSize;
+}
+
+- (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section {
+  
+        return 0;
+}
+
+-(void)updateCellsLayout{
+    float centerX =_relatedCollectionView.contentOffset.x+(self.view.frame.size.width)/2;
+    NSArray *arr =[_relatedCollectionView visibleCells];
+    for (UICollectionViewCell *cell in arr){
+        
+        float offsetX = centerX-cell.center.x;
+        if(offsetX<0){
+            offsetX*=-1;
+        }
+        cell.transform = CGAffineTransformIdentity;
+        float offsetPercentage = offsetX/(self.view.bounds.size.width*5);
+        float scaleX = 1-offsetPercentage;
+        
+        cell.transform = CGAffineTransformScale(CGAffineTransformIdentity, scaleX, scaleX);
+    }
+}
+
+
+-(void)viewWillLayoutSubviews{
+    [super viewWillLayoutSubviews];
+    [self updateCellsLayout];
+}
+
 @end

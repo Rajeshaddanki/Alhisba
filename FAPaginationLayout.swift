@@ -19,8 +19,6 @@ public class FAPaginationLayout: UICollectionViewFlowLayout {
     var sizeForTopInsertions: CGSize = CGSize.zero
     
     
-    
-    
     //  Preparing the layout
     
     override public func prepare() {
@@ -42,13 +40,8 @@ public class FAPaginationLayout: UICollectionViewFlowLayout {
 
         sizeForTopInsertions = collectionViewContentSize
     }
-    
-    
-    
-    
-    //  configuring the content offsets relative to the scroll velocity
 
-    
+    //  configuring the content offsets relative to the scroll velocity
     //  Solution provided by orlandoamorim
 
     var lastPoint: CGPoint = CGPoint.zero

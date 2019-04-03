@@ -38,9 +38,14 @@ NS_ASSUME_NONNULL_BEGIN
 @property (weak, nonatomic) IBOutlet UILabel *estimatedPriceLbl;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *alspecTopHeight;
 
+@property (weak, nonatomic) IBOutlet UILabel *preViewArea;
+
 @property (weak, nonatomic) IBOutlet UILabel *totalProperty;
 
 @property (weak, nonatomic) IBOutlet UILabel *dateLbl;
+
+
+@property (weak, nonatomic) IBOutlet UICollectionView *relatedCollectionView;
 
 
 // Nsstring values ...

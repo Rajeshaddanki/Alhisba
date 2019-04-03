@@ -42,11 +42,19 @@
 #define CONTACT_US @"contact-us.php"
 #define SETTINGS @"settings.php"
 #define MEMBERS @"members.php"
+#define EDIT_MEMBER @"edit-member.php"
 #define NEWS @"news.php"
 #define FAQS @"faqs.php"
 #define BLOG @"blog.php"
 #define CONTACT @"contact.php"
-
+#define ADD_CATE @"add_categories.php"
+#define ADDS @"adds.php"
+#define POST_ADD @"post_add.php"
+#define IVE_RENTS @"ive_rents_settings.php"
+#define ADD_CATEG @"add_categories.php"
+#define APPRAISAL_SETTINGS @"appraisal_settings.php"
+#define POST_ADDIMAGE @"post_add_images.php"
+#define GROUPS @"ive_finishing_groups.php"
 
 
 

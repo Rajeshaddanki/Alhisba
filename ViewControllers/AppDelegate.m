@@ -270,7 +270,8 @@ BOOL isBold(UIFontDescriptor * fontDescriptor)
         [[UIView appearance] setSemanticContentAttribute:UISemanticContentAttributeForceRightToLeft];
         [[UIButton appearance] titleLabel].font = [UIFont fontWithName:@"Cairo" size:16];
         [UITextField appearance].font=[UIFont fontWithName:@"Cairo" size:16];
-        
+        [[UICollectionView appearance] setSemanticContentAttribute:UISemanticContentAttributeForceRightToLeft];
+
     } else {
         
         //    [[UILabel appearance] setSubstituteFontName:@"DroidSans"];
@@ -282,7 +283,19 @@ BOOL isBold(UIFontDescriptor * fontDescriptor)
         [[UIView appearance] setSemanticContentAttribute:UISemanticContentAttributeForceLeftToRight];
         [[UIButton appearance] titleLabel].font = [UIFont fontWithName:@"Cairo" size:16];
         [UITextField appearance].font=[UIFont fontWithName:@"Cairo" size:16];
+        [[UICollectionView appearance] setSemanticContentAttribute:UISemanticContentAttributeForceLeftToRight];
     }
+}
+
+- (void)afterLoginSucess {
+    self.window = [[UIWindow alloc] initWithFrame:UIScreen.mainScreen.bounds];
+    
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    
+    UIViewController *viewController = [storyboard instantiateViewControllerWithIdentifier:@"SWRevealViewController"];
+    
+    self.window.rootViewController = viewController;
+    [self.window makeKeyAndVisible];
     
 }
 

@@ -224,6 +224,8 @@
     [newView addSubview:btn];
     self.navigationItem.titleView = newView;
     
+    [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"btng.png"] forBarMetrics:UIBarMetricsDefault];
+
 }
 
 -(void)clickForInfo:(id)sender{

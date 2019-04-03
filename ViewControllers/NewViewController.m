@@ -98,6 +98,40 @@
     [btn addTarget:self action:@selector(clickForInfo:) forControlEvents:UIControlEventTouchUpInside];
     [newView addSubview:btn];
     self.navigationItem.titleView = newView;
+    
+    [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"btng.png"] forBarMetrics:UIBarMetricsDefault];
+
+    CAGradientLayer *gradientLayer = [CAGradientLayer layer];
+    gradientLayer.frame = self.navigationController.navigationBar.bounds;
+    
+    CGRect gradientFrame = self.navigationController.navigationBar.bounds;
+    gradientFrame.size.height += [UIApplication sharedApplication].statusBarFrame.size.height;
+    gradientLayer.frame = gradientFrame;
+    
+    gradientLayer.colors = @[ (__bridge id)[UIColor colorWithRed:16.0f/255.0f green:35.0f/255.0f blue:71.0f/255.0f alpha:1].CGColor,
+                              (__bridge id)[UIColor colorWithRed:31.0f/255.0f green:71.0f/255.0f blue:147.0f/255.0f alpha:1].CGColor ];
+    //    gradientLayer.startPoint = CGPointMake(1.0, 0);
+    //    gradientLayer.endPoint = CGPointMake(1.0, 0.5);
+    
+    UIGraphicsBeginImageContext(gradientLayer.bounds.size);
+    [gradientLayer renderInContext:UIGraphicsGetCurrentContext()];
+    UIImage *gradientImage1 = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    [self.navigationController.navigationBar setBackgroundImage:gradientImage1 forBarMetrics:UIBarMetricsDefault];
+    
+}
+
+- (UIImage *)imageFromLayer:(CALayer *)layer
+{
+    UIGraphicsBeginImageContext([layer frame].size);
+    
+    [layer renderInContext:UIGraphicsGetCurrentContext()];
+    UIImage *outputImage = UIGraphicsGetImageFromCurrentImageContext();
+    
+    UIGraphicsEndImageContext();
+    
+    return outputImage;
 }
 
 -(void)clickForInfo:(id)sender{
@@ -107,6 +141,21 @@
 
 -(void)viewWillAppear:(BOOL)animated{
     
+    
+    self.segmentControl.layer.borderWidth = 1;
+    self.segmentControl.layer.borderColor = [UIColor whiteColor].CGColor;
+    self.segmentControl.layer.cornerRadius = 15.0f;
+    self.segmentControl.layer.masksToBounds = YES;
+    self.segmentControl.clipsToBounds = YES;
+    
+    UIFont *Boldfont = [UIFont boldSystemFontOfSize:16.0f];
+    NSDictionary *attributes = [NSDictionary dictionaryWithObject:Boldfont forKey:UITextAttributeFont];
+    [self.segmentControl setTitleTextAttributes:attributes forState:UIControlStateNormal];
+    
+    [self.segmentControl setTitle:Localized(@"News") forSegmentAtIndex:0];
+    
+    [self.segmentControl setTitle:Localized(@"Articles") forSegmentAtIndex:1];
+    
     self.navigationController.navigationBar.barTintColor = [UIColor colorWithRed:19.0f/255.0f green:40.0f/255.0f blue:83.0f/255.0f alpha:1.0f];
     
     self.navigationController.navigationBar.tintColor = [UIColor redColor];
@@ -115,10 +164,39 @@
     self.navigationController.navigationBar.hidden = NO;
 }
 
+- (IBAction)segmentTouchIns:(UISegmentedControl*)sender {
+    
+    switch (sender.selectedSegmentIndex) {
+        case 0:
+            NSLog(@"First was selected");
+            
+            [self forNews];
+            [self showHUD:@""];
+            //    [self makePostCallForPage:NEWS withParams:@{@"page":@"0"} withRequestCode:23];
+            [self makePostCallForPage:NEWS withParams:@{@"page":@"0"} withRequestCode:23];
+            break;
+        case 1:
+            NSLog(@"Second was selected");
+
+            [self forArticles];
+            [self showHUD:@""];
+            [self makePostCallForPage:BLOG withParams:@{@"page":@"0"} withRequestCode:23];
+
+            break;
+        case 2:
+            NSLog(@"Third was selected");
+            break;
+        default:
+            break;
+    }
+}
+
 -(void)goBack{
     
-    HomeViewController *obj = [self.storyboard instantiateViewControllerWithIdentifier:@"HomeViewController"];
-    [self.navigationController pushViewController:obj animated:YES];
+//    HomeViewController *obj = [self.storyboard instantiateViewControllerWithIdentifier:@"HomeViewController"];
+//    [self.navigationController pushViewController:obj animated:YES];
+    
+    [self.navigationController popToRootViewControllerAnimated:NO];
 }
 
 
@@ -208,13 +286,25 @@
     }
     else{
         htmlString = [dic  valueForKey:@"small_content_english"];
-        
     }
+    
+    [cell.readMoreBtn setTitle:Localized(@"Read More") forState:UIControlStateNormal];
+    
+    cell.readMoreBtn.tag = indexPath.row;
+    
+    [cell.readMoreBtn addTarget:self action:@selector(readBtnTapped:) forControlEvents:UIControlEventTouchUpInside];
 
     cell.nesDes.text = htmlString;
 
     return cell;
+}
 
+-(void)readBtnTapped:(UIButton*)sender
+{
+    detailsViewController *obj = [self.storyboard instantiateViewControllerWithIdentifier:@"detailsViewController"];
+    obj.detailsDic = [newsArray objectAtIndex:sender.tag];
+    [self.navigationController.navigationBar setHidden:NO];
+    [self.navigationController pushViewController:obj animated:YES];
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
@@ -240,9 +330,9 @@
 //                [self makePostCallForPage:NEWS withParams:@{@"page":[NSString stringWithFormat:@"%d",pageNumber]} withRequestCode:24];
 //            }
 //        }
-//
 //    }
 //}
+
 - (void)tableView:(UITableView *)tableView
   willDisplayCell:(UITableViewCell *)cell
 forRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -263,6 +353,62 @@ if(indexPath.row == newsArray.count){
 - (void) hideHUD {
     [SVProgressHUD dismissWithDelay:(NSTimeInterval) 0.2f];
 }
+
+-(void)forNews{
+    
+    // label
+    UILabel *tmpTitleLabel1 =[[UILabel alloc]initWithFrame:CGRectZero];
+    tmpTitleLabel1.text = Localized(@"NEWS");
+    if ([[Utils getLanguage] isEqualToString:KEY_LANGUAGE_AR]) {
+        [tmpTitleLabel1 setFont:[UIFont fontWithName:@"DroidArabicKufi-Bold"size:20]];
+    }else{
+        [tmpTitleLabel1 setFont:[UIFont fontWithName:@"DroidSans-Bold" size:20]];
+    }
+    tmpTitleLabel1.backgroundColor = [UIColor clearColor];
+    tmpTitleLabel1.textColor = [UIColor colorWithRed:212.0f/255.0f green:175.0f/255.0f blue:42.0f/255.0f alpha:1.0f];
+    [tmpTitleLabel1 sizeToFit];
+    UIImage *image = [UIImage imageNamed: @"badge.png"];
+    UIImageView *imageView = [[UIImageView alloc] initWithImage: image];
+    
+    CGRect applicationFrame = CGRectMake(0, 0, 300, 40);
+    UIView * newView = [[UIView alloc] initWithFrame:applicationFrame] ;
+    [newView addSubview:imageView];
+    [newView addSubview:tmpTitleLabel1];
+    tmpTitleLabel1.center=newView.center;
+    imageView.frame = CGRectMake(150+(tmpTitleLabel1.frame.size.width/2)+4, 10, 20, 20);
+    UIButton *btn = [[UIButton alloc] initWithFrame:CGRectMake(150+(tmpTitleLabel1.frame.size.width/2)+4, 10, 20, 20)];
+    [btn addTarget:self action:@selector(clickForInfo:) forControlEvents:UIControlEventTouchUpInside];
+    [newView addSubview:btn];
+    self.navigationItem.titleView = newView;
+}
+
+-(void)forArticles{
+    
+    UILabel *tmpTitleLabel =[[UILabel alloc]initWithFrame:CGRectZero];
+    tmpTitleLabel.text = Localized(@"Articles");
+    if ([[Utils getLanguage] isEqualToString:KEY_LANGUAGE_AR]) {
+        [tmpTitleLabel setFont:[UIFont fontWithName:@"DroidArabicKufi-Bold"size:20]];
+    }else{
+        [tmpTitleLabel setFont:[UIFont fontWithName:@"DroidSans-Bold" size:20]];
+    }
+    tmpTitleLabel.backgroundColor = [UIColor clearColor];
+    tmpTitleLabel.textColor = [UIColor colorWithRed:212.0f/255.0f green:175.0f/255.0f blue:42.0f/255.0f alpha:1.0f];
+    [tmpTitleLabel sizeToFit];
+    UIImage *image1 = [UIImage imageNamed: @"badge.png"];
+    UIImageView *imageView1 = [[UIImageView alloc] initWithImage: image1];
+    
+    CGRect applicationFrame1 = CGRectMake(0, 0, 300, 40);
+    UIView * newView1 = [[UIView alloc] initWithFrame:applicationFrame1] ;
+    [newView1 addSubview:imageView1];
+    [newView1 addSubview:tmpTitleLabel];
+    tmpTitleLabel.center=newView1.center;
+    imageView1.frame = CGRectMake(150+(tmpTitleLabel.frame.size.width/2)+4, 10, 20, 20);
+    UIButton *btn1 = [[UIButton alloc] initWithFrame:CGRectMake(150+(tmpTitleLabel.frame.size.width/2)+4, 10, 20, 20)];
+    [btn1 addTarget:self action:@selector(clickForInfo:) forControlEvents:UIControlEventTouchUpInside];
+    [newView1 addSubview:btn1];
+    self.navigationItem.titleView = newView1;
+}
+
 
 
 @end

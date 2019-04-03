@@ -18,9 +18,14 @@
 #import <GoogleAnalytics/GAI.h>
 #import <GoogleAnalytics/GAIDictionaryBuilder.h>
 #import <GoogleAnalytics/GAIFields.h>
+#import "SelectAreaViewController.h"
+#import "UIViewController+MJPopupViewController.h"
+#import <EventKit/EventKit.h>
+#import <EventKitUI/EventKitUI.h>
 
 
-@interface AuctionsViewController ()<UISearchBarDelegate>{
+
+@interface AuctionsViewController ()<UISearchBarDelegate,PopViewControllerDelegate,EKEventEditViewDelegate>{
     
     UIButton *menuBtn,*backBtn;
     NSMutableArray *resultArray,*popUpList;
@@ -28,7 +33,15 @@
     SWRevealViewController *revealViewController;
     NSMutableArray *tableArray;
     BOOL Expand;
+    SVProgressHUD *hud;
+    TradesTableViewCell *cell2;
+    NSString *type;
+
 }
+
+@property (strong, nonatomic) EKEventStore *eventStore;
+@property (nonatomic) BOOL isAccessToEventStoreGranted;
+
 
 @end
 
@@ -38,10 +51,26 @@
     [super viewDidLoad];
     
     _searchBar.delegate = self;
-    
     Expand= NO;
+    _coverView.hidden = NO;
     
+    [hud setForegroundColor:[UIColor lightGrayColor]];
+    
+    _historicalUnderLbl.backgroundColor = [UIColor colorWithRed:234.0f/255.0f green:194.0f/255.0f blue:49.0f/255.0f alpha:1.0f];
+    _todayUnderLbl.backgroundColor = [UIColor colorWithRed:184.0f/255.0f green:184.0f/255.0f blue:184.0f/255.0f alpha:1.0f];
+    _upcomingUnderLbl.backgroundColor = [UIColor colorWithRed:184.0f/255.0f green:184.0f/255.0f blue:184.0f/255.0f alpha:1.0f];
+    
+    [_historicalBtn setTitleColor:[UIColor colorWithRed:234.0f/255.0f green:194.0f/255.0f blue:49.0f/255.0f alpha:1.0f] forState:UIControlStateNormal];
+    [_todayBtn setTitleColor:[UIColor colorWithRed:22.0f/255.0f green:46.0f/255.0f blue:95.0f/255.0f alpha:1.0f] forState:UIControlStateNormal];
+    [_upcomingBtn setTitleColor:[UIColor colorWithRed:22.0f/255.0f green:46.0f/255.0f blue:95.0f/255.0f alpha:1.0f] forState:UIControlStateNormal];
+
+    _underLineLbl.hidden = YES;
+
     _auctionTitleLbl.text = Localized(@"Auctions");
+    _searchBar.placeholder = Localized(@"Search");
+    
+    type = @"hostorical";
+    
     _backGroundViewImage.hidden = YES;
     _backGroundView.hidden = YES;
     _priceListView.hidden = YES;
@@ -50,6 +79,9 @@
     _summaryListView.hidden = YES;
 
     _mojImahe.hidden = YES;
+    _mojDateLbl.hidden = YES;
+    _clendarBtn.hidden = YES;
+    _mojTitleLbl.hidden = YES;
     _searchBar.hidden = NO;
     _tableView.hidden = NO;
     _mojImahe.layer.cornerRadius = 10.0f;
@@ -87,7 +119,7 @@
     [_historicalBtn setTitle:Localized(@"Historical") forState:UIControlStateNormal];
     [_todayBtn setTitle:Localized(@"Today") forState:UIControlStateNormal];
     [_upcomingBtn setTitle:Localized(@"Upcoming") forState:UIControlStateNormal];
-    [_propertyListBackBtn setTitle:Localized(@"Back") forState:UIControlStateNormal];
+    [_propertyListBackBtn setTitle:Localized(@"Auction Summary") forState:UIControlStateNormal];
     
     self.navigationItem.title = Localized(@"Auctions");
     
@@ -186,8 +218,42 @@
     [self customSetup];
     [self showHUD:@""];
     
+    [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"btng.png"] forBarMetrics:UIBarMetricsDefault];
+
+    
     [self makePostCallForPage:HISTORICAl withParams:@{@"type":@"history"} withRequestCode:1];
 
+    CAGradientLayer *gradientLayer = [CAGradientLayer layer];
+    gradientLayer.frame = self.navigationController.navigationBar.bounds;
+    
+    CGRect gradientFrame = self.navigationController.navigationBar.bounds;
+    gradientFrame.size.height += [UIApplication sharedApplication].statusBarFrame.size.height;
+    gradientLayer.frame = gradientFrame;
+    
+    gradientLayer.colors = @[ (__bridge id)[UIColor colorWithRed:16.0f/255.0f green:35.0f/255.0f blue:71.0f/255.0f alpha:1].CGColor,
+                              (__bridge id)[UIColor colorWithRed:31.0f/255.0f green:71.0f/255.0f blue:147.0f/255.0f alpha:1].CGColor ];
+    //    gradientLayer.startPoint = CGPointMake(1.0, 0);
+    //    gradientLayer.endPoint = CGPointMake(1.0, 0.5);
+    
+    UIGraphicsBeginImageContext(gradientLayer.bounds.size);
+    [gradientLayer renderInContext:UIGraphicsGetCurrentContext()];
+    UIImage *gradientImage1 = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    [self.navigationController.navigationBar setBackgroundImage:gradientImage1 forBarMetrics:UIBarMetricsDefault];
+    
+}
+
+- (UIImage *)imageFromLayer:(CALayer *)layer
+{
+    UIGraphicsBeginImageContext([layer frame].size);
+    
+    [layer renderInContext:UIGraphicsGetCurrentContext()];
+    UIImage *outputImage = UIGraphicsGetImageFromCurrentImageContext();
+    
+    UIGraphicsEndImageContext();
+    
+    return outputImage;
 }
 
 -(void)badgeInfoBtnTapped:(id)sender{
@@ -205,6 +271,11 @@
     [tracker send:[[GAIDictionaryBuilder createScreenView] build]];
 
    // [_tradesTableView reloadData];
+    
+    _historicalUnderLbl.backgroundColor = [UIColor colorWithRed:234.0f/255.0f green:194.0f/255.0f blue:49.0f/255.0f alpha:1.0f];
+    _todayUnderLbl.backgroundColor = [UIColor colorWithRed:184.0f/255.0f green:184.0f/255.0f blue:184.0f/255.0f alpha:1.0f];
+    _upcomingUnderLbl.backgroundColor = [UIColor colorWithRed:184.0f/255.0f green:184.0f/255.0f blue:184.0f/255.0f alpha:1.0f];
+    _underLineLbl.hidden = YES;
 
 }
 - (void)customSetup
@@ -286,15 +357,23 @@
         
         _noAuctionsLbl.hidden = NO;
         _mojImahe.hidden = YES;
+        _clendarBtn.hidden = YES;
+        _mojDateLbl.hidden = YES;
+        _mojTitleLbl.hidden = YES;
         [_tableView reloadData];
     }
     else{
         _noAuctionsLbl.hidden = YES;
         _mojImahe.hidden = YES;
+        _clendarBtn.hidden = YES;
+        _mojDateLbl.hidden = YES;
+        _mojTitleLbl.hidden = YES;
         [_tableView reloadData];
     }
     
     [_tradesTableView reloadData];
+    
+    _coverView.hidden = YES;
     
     [self hideHUD];
 }
@@ -313,6 +392,9 @@
         _propertyListBackBtn.hidden = YES;
         _noAuctionsLbl.hidden = YES;
         _mojImahe.hidden = YES;
+        _clendarBtn.hidden = YES;
+        _mojDateLbl.hidden = YES;
+        _mojTitleLbl.hidden = YES;
         _tableView.hidden = NO;
         _searchBar.hidden = NO;
     }else{
@@ -345,6 +427,11 @@
     _todayUnderLbl.hidden = YES;
     _upcomingUnderLbl.hidden = NO;
     
+    _lineLbl.hidden = NO;
+    _searchIconBtn.hidden = NO;
+    _searchBackBtn.hidden = NO;
+    _searchTextLbl.hidden = NO;
+
     _backGroundViewImage.hidden = YES;
     _backGroundView.hidden = YES;
     _priceListView.hidden = YES;
@@ -353,6 +440,24 @@
     _summaryListView.hidden = YES;
     _propertyListBackBtn.hidden = YES;
     
+    _tableView.hidden = NO;
+    
+    type = @"upcoming";
+    
+    _historicalUnderLbl.backgroundColor = [UIColor colorWithRed:184.0f/255.0f green:184.0f/255.0f blue:184.0f/255.0f alpha:1.0f];
+    _todayUnderLbl.backgroundColor = [UIColor colorWithRed:184.0f/255.0f green:184.0f/255.0f blue:184.0f/255.0f alpha:1.0f];
+    _upcomingUnderLbl.backgroundColor = [UIColor colorWithRed:234.0f/255.0f green:194.0f/255.0f blue:49.0f/255.0f alpha:1.0f];
+    
+    [_upcomingBtn setTitleColor:[UIColor colorWithRed:234.0f/255.0f green:194.0f/255.0f blue:49.0f/255.0f alpha:1.0f] forState:UIControlStateNormal];
+    
+    [_historicalBtn setTitleColor:[UIColor colorWithRed:22.0f/255.0f green:46.0f/255.0f blue:95.0f/255.0f alpha:1.0f] forState:UIControlStateNormal];
+    [_todayBtn setTitleColor:[UIColor colorWithRed:22.0f/255.0f green:46.0f/255.0f blue:95.0f/255.0f alpha:1.0f] forState:UIControlStateNormal];
+
+    _underLineLbl.hidden = YES;
+    
+    _searchTextLbl.text = Localized(@"Search");
+
+    _coverView.hidden = NO;
     [self makePostCallForPage:HISTORICAl withParams:@{@"type":@"upcoming"} withRequestCode:1];
     [self showHUD:@""];
 
@@ -377,6 +482,12 @@
     _historicalUnderLbl.hidden = YES;
     _todayUnderLbl.hidden = NO;
     _upcomingUnderLbl.hidden = YES;
+    
+    _lineLbl.hidden = NO;
+    _searchIconBtn.hidden = NO;
+    _searchBackBtn.hidden = NO;
+    _searchTextLbl.hidden = NO;
+
 
     _backGroundViewImage.hidden = YES;
     _backGroundView.hidden = YES;
@@ -386,6 +497,24 @@
     _summaryListView.hidden = YES;
     _propertyListBackBtn.hidden = YES;
     
+    type = @"today";
+    
+    _historicalUnderLbl.backgroundColor = [UIColor colorWithRed:184.0f/255.0f green:184.0f/255.0f blue:184.0f/255.0f alpha:1.0f];
+    _upcomingUnderLbl.backgroundColor = [UIColor colorWithRed:184.0f/255.0f green:184.0f/255.0f blue:184.0f/255.0f alpha:1.0f];
+    _todayUnderLbl.backgroundColor = [UIColor colorWithRed:234.0f/255.0f green:194.0f/255.0f blue:49.0f/255.0f alpha:1.0f];
+    
+    [_todayBtn setTitleColor:[UIColor colorWithRed:234.0f/255.0f green:194.0f/255.0f blue:49.0f/255.0f alpha:1.0f] forState:UIControlStateNormal];
+    
+    [_historicalBtn setTitleColor:[UIColor colorWithRed:22.0f/255.0f green:46.0f/255.0f blue:95.0f/255.0f alpha:1.0f] forState:UIControlStateNormal];
+    [_upcomingBtn setTitleColor:[UIColor colorWithRed:22.0f/255.0f green:46.0f/255.0f blue:95.0f/255.0f alpha:1.0f] forState:UIControlStateNormal];
+
+
+    _searchTextLbl.text = Localized(@"Search");
+    
+    _coverView.hidden = NO;
+    
+    _underLineLbl.hidden = YES;
+    
     [self makePostCallForPage:HISTORICAl withParams:@{@"type":@"today"}  withRequestCode:1];
     [self showHUD:@""];
 }
@@ -394,19 +523,50 @@
     
     [self scrollToTop];
 
+    _lineLbl.hidden = NO;
+    _searchIconBtn.hidden = NO;
+    _searchBackBtn.hidden = NO;
+    _searchTextLbl.hidden = NO;
 
     _historicalUnderLbl.hidden = NO;
     _todayUnderLbl.hidden = YES;
     _upcomingUnderLbl.hidden = YES;
    
+//    _backGroundViewImage.hidden = YES;
+//    _backGroundView.hidden = YES;
+//    _priceListView.hidden = YES;
+//    _titleLbl.hidden = YES;
+//    _tradesTableView.hidden = YES;
+//    _summaryListView.hidden = YES;
+    
     _backGroundViewImage.hidden = YES;
     _backGroundView.hidden = YES;
     _priceListView.hidden = YES;
     _titleLbl.hidden = YES;
     _tradesTableView.hidden = YES;
     _summaryListView.hidden = YES;
+    _propertyListBackBtn.hidden = YES;
+    _tableView.hidden = NO;
+
     
+    type = @"historical";
+    
+    _todayUnderLbl.backgroundColor = [UIColor colorWithRed:184.0f/255.0f green:184.0f/255.0f blue:184.0f/255.0f alpha:1.0f];
+    _upcomingUnderLbl.backgroundColor = [UIColor colorWithRed:184.0f/255.0f green:184.0f/255.0f blue:184.0f/255.0f alpha:1.0f];
+    _historicalUnderLbl.backgroundColor = [UIColor colorWithRed:234.0f/255.0f green:194.0f/255.0f blue:49.0f/255.0f alpha:1.0f];
+    
+    [_historicalBtn setTitleColor:[UIColor colorWithRed:234.0f/255.0f green:194.0f/255.0f blue:49.0f/255.0f alpha:1.0f] forState:UIControlStateNormal];
+    
+    [_todayBtn setTitleColor:[UIColor colorWithRed:22.0f/255.0f green:46.0f/255.0f blue:95.0f/255.0f alpha:1.0f] forState:UIControlStateNormal];
+    [_upcomingBtn setTitleColor:[UIColor colorWithRed:22.0f/255.0f green:46.0f/255.0f blue:95.0f/255.0f alpha:1.0f] forState:UIControlStateNormal];
+
+
+    _underLineLbl.hidden = YES;
+    _coverView.hidden = NO;
     [self showHUD:@""];
+    
+    
+    
     [self makePostCallForPage:HISTORICAl withParams:@{@"type":@"history"} withRequestCode:1];
 }
 
@@ -434,8 +594,67 @@
     _propertyListBackBtn.hidden = YES;
     _tradesTableView.hidden = YES;
     _mojImahe.hidden = YES;
+    _clendarBtn.hidden = YES;
+    _mojDateLbl.hidden = YES;
+    _mojTitleLbl.hidden = YES;
     _tableView.hidden = NO;
     _searchBar.hidden = NO;
+    
+    
+    Auctions1ViewController *obj = [self.storyboard instantiateViewControllerWithIdentifier:@"Auctions1ViewController"];
+    obj.auctionList = [[NSUserDefaults standardUserDefaults] valueForKey:@"aucList"];
+    obj.fromProp = @"fromPop";
+    obj.popUpList1 = [[NSUserDefaults standardUserDefaults] valueForKey:@"aucList1"];
+    [self.navigationController pushViewController:obj animated:YES];
+    
+}
+
+- (IBAction)searchBtnTapped:(id)sender {
+  
+    [self showHUD:@""];
+    
+    SelectAreaViewController *vc = [[SelectAreaViewController alloc] initWithNibName:@"SelectAreaViewController" bundle:nil];
+    vc.delegate=self;
+    //vc.from = @"register";
+    //    [self.navigationController pushViewController:vc animated:YES];
+    vc.completionBlock2 = ^(NSString *area) {
+        NSLog(@"%@",area);
+        //        snationality= area;
+//        [_areaBtn setTitle:area forState:UIControlStateNormal];
+       
+      //  _searchBar.text = [NSString stringWithFormat:@"%@",area];
+        
+        _searchTextLbl.text = [NSString stringWithFormat:@"%@",area];
+        
+        NSString *areId1 = [NSString stringWithFormat:@"%@",[[NSUserDefaults standardUserDefaults]valueForKey:@"auctAreaid"]];
+        
+        
+        if ([type isEqualToString:@"historical"]) {
+            
+            [self showHUD:@""];
+            
+            [self makePostCallForPage:HISTORICAl withParams:@{@"type":@"history",@"area_id":[NSString stringWithFormat:@"%d",areId1.intValue]}  withRequestCode:1];
+        }
+        else  if ([type isEqualToString:@"today"]){
+            
+            [self showHUD:@""];
+            
+            [self makePostCallForPage:HISTORICAl withParams:@{@"type":@"today",@"area_id":[NSString stringWithFormat:@"%d",areId1.intValue]}  withRequestCode:1];
+        }
+        else{
+            [self showHUD:@""];
+            
+            [self makePostCallForPage:HISTORICAl withParams:@{@"type":@"upcoming",@"area_id":[NSString stringWithFormat:@"%d",areId1.intValue]}  withRequestCode:1];
+        }
+        
+    };
+    
+    [self presentPopupViewController:vc animationType:MJPopupViewAnimationSlideBottomTop dismissed:nil];
+    
+    [self hideHUD];
+}
+- (void)cancelButtonClicked:(UIViewController *)secondDetailViewController {
+    [self dismissPopupViewControllerWithanimationType:MJPopupViewAnimationSlideTopBottom];
 }
 
 #pragma TableView Delegate & Dat Source..
@@ -472,15 +691,6 @@
             
             ExpandTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
             NSMutableDictionary *dic = [popUpList objectAtIndex:indexPath.row-1];
-            
-            if ([tableArray containsObject:[NSString stringWithFormat:@"%li",(long)indexPath.row]])
-            {
-             //   [shopCell.checkBtn setImage:[UIImage imageNamed:@"Sortchecked.png"] forState:UIControlStateNormal];
-            }
-            else
-            {
-              //  [shopCell.checkBtn setImage:[UIImage imageNamed:@"Sortuncheck.png"] forState:UIControlStateNormal];
-            }
             
             [cell.propertyTypeLbl setTextAlignment:NSTextAlignmentCenter];
             [cell.propertyTypeTitle setTextAlignment:NSTextAlignmentCenter];
@@ -522,7 +732,6 @@
                 cell.m2Value.text = [NSString stringWithFormat:@"%@",[dic valueForKey:@"sale_price_per_sqr_meter"]];
             }
             
-            
             if (adjustedIndexPath.row % 2) {
                 
                 cell.contentView.backgroundColor = [UIColor colorWithRed:210.0f/255.0f green:215.0f/255.0f blue:227.0f/255.0f alpha:1.0f];
@@ -548,6 +757,19 @@
             [cell.tradesDate setClipsToBounds:YES];
             [cell.tradesDate.layer setCornerRadius:5.0f];
             cell.tradesDate.layer.backgroundColor=[UIColor whiteColor].CGColor;
+            
+//            cell.expandBtn.layer.cornerRadius = 0.3 * cell.expandBtn.bounds.size.width;
+//            cell.expandBtn.layer.borderColor = [UIColor colorWithRed:19.0f/255.0f green:40.0f/255.0f blue:83.0f/255.0f alpha:1.0f].CGColor;
+//            cell.expandBtn.layer.borderWidth = 2.0f;
+            
+//            if ([tableArray containsObject:[NSString stringWithFormat:@"%li",(long)indexPath.row]])
+//            {
+//                [cell.expandBtn setImage:[UIImage imageNamed:@"expandM.png"] forState:UIControlStateNormal];
+//            }
+//            else
+//            {
+//                [cell.expandBtn setImage:[UIImage imageNamed:@"expandP.png"] forState:UIControlStateNormal];
+//            }
             
             [cell.descriptionTitle setTextAlignment:NSTextAlignmentCenter];
             [cell.sizePrice setTextAlignment:NSTextAlignmentCenter];
@@ -677,10 +899,35 @@
     NSIndexPath *indexPath = [_tableView indexPathForRowAtPoint:buttonFrame.origin];
     
     _mojImahe.hidden = NO;
+    _mojDateLbl.hidden = NO;
+    _clendarBtn.hidden = NO;
+    _mojTitleLbl.hidden = NO;
     _tableView.hidden = YES;
     _searchBar.hidden = YES;
-
+    
+    _lineLbl.hidden = YES;
+    _searchIconBtn.hidden = YES;
+    _searchBackBtn.hidden = YES;
+    _searchTextLbl.hidden = YES;
+    
     popUpList = [[resultArray valueForKey:@"auctions"] objectAtIndex:indexPath.row];
+    
+    [_mojImahe setImageWithURL:[[resultArray valueForKey:@"image"] objectAtIndex:indexPath.row] usingActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    
+    _mojDateLbl.text = [[resultArray valueForKey:@"event_date"] objectAtIndex:indexPath.row];
+    
+    NSUserDefaults *sta = [NSUserDefaults standardUserDefaults];
+    [sta setObject:[resultArray objectAtIndex:indexPath.row] forKey:@"aucList"];
+    [sta synchronize];
+    
+    NSUserDefaults *sta1 = [NSUserDefaults standardUserDefaults];
+    [sta1 setObject:[[resultArray valueForKey:@"auctions"] objectAtIndex:indexPath.row] forKey:@"aucList1"];
+    [sta1 synchronize];
+
+
+    NSUserDefaults *sta2 = [NSUserDefaults standardUserDefaults];
+    [sta2 setObject:[[resultArray valueForKey:@"image"] objectAtIndex:indexPath.row] forKey:@"popImage"];
+    [sta2 synchronize];
     
     count = indexPath.row;
     _backGroundViewImage.hidden = NO;
@@ -693,12 +940,17 @@
     if ([[Utils getLanguage] isEqualToString:KEY_LANGUAGE_AR]) {
         
         _titleLbl.text = [[dic valueForKey:@"organiser"] valueForKey:@"organiser_name_arabic"];
+        
+        _mojTitleLbl.text = [[dic valueForKey:@"organiser"] valueForKey:@"organiser_name_arabic"];
     }
     else{
         
-        
         _titleLbl.text = [[dic valueForKey:@"organiser"] valueForKey:@"organiser_name_english"];
+        
+        _mojTitleLbl.text = [[dic valueForKey:@"organiser"] valueForKey:@"organiser_name_english"];
     }
+    
+    NSLog(@"disc value is %@",[[resultArray valueForKey:@"auctions"] objectAtIndex:indexPath.row]);
     
     [_tradesTableView reloadData];
     
@@ -713,6 +965,14 @@
     NSIndexPath *indexPath = [_tableView indexPathForRowAtPoint:buttonFrame.origin];
     
     popUpList = [resultArray objectAtIndex:indexPath.row];
+    
+    NSUserDefaults *sta = [NSUserDefaults standardUserDefaults];
+    [sta setObject:[resultArray objectAtIndex:indexPath.row] forKey:@"aucList"];
+    [sta synchronize];
+    
+    NSUserDefaults *sta1 = [NSUserDefaults standardUserDefaults];
+    [sta1 setObject:[[resultArray valueForKey:@"auctions"] objectAtIndex:indexPath.row] forKey:@"aucList1"];
+    [sta1 synchronize];
     
     Auctions1ViewController *obj = [self.storyboard instantiateViewControllerWithIdentifier:@"Auctions1ViewController"];
     obj.auctionList = [resultArray objectAtIndex:indexPath.row];
@@ -781,38 +1041,81 @@
 #pragma mark JNExpandableTableView DataSource
 - (BOOL)tableView:(JNExpandableTableView *)tableView canExpand:(NSIndexPath *)indexPath
 {
-    if ([tableArray containsObject:[NSString stringWithFormat:@"%li",(long)indexPath.row]])
+    
+//    TradesTableViewCell *cell = [self.tradesTableView cellForRowAtIndexPath:indexPath];
+//    if ([tableArray containsObject:[NSString stringWithFormat:@"%li",(long)indexPath.row]])
+//    {
+//        [cell.expandBtn setImage:[UIImage imageNamed:@"expandP.png"] forState:UIControlStateNormal];
+//
+//        [tableArray removeObject:[NSString stringWithFormat:@"%li",(long)indexPath.row]];
+//    }
+//    else
+//    {
+//        [cell.expandBtn setImage:[UIImage imageNamed:@"expandM.png"] forState:UIControlStateNormal];
+//
+//        [tableArray addObject:[NSString stringWithFormat:@"%li",(long)indexPath.row]];
+//    }
+    
+    UITableViewCell *cell = [self.tradesTableView cellForRowAtIndexPath:indexPath];
+    cell2 = cell;
+
+    if (![self.tradesTableView.expandedContentIndexPath isEqual:indexPath])
     {
-        [tableArray removeObject:[NSString stringWithFormat:@"%li",(long)indexPath.row]];
-    }
-    else
-    {
-        [tableArray addObject:[NSString stringWithFormat:@"%li",(long)indexPath.row]];
+        UITableViewCell *cell = [self.tradesTableView cellForRowAtIndexPath:indexPath];
+        if ([cell isKindOfClass:[TradesTableViewCell class]]) {
+            //do specific code
+//            TradesTableViewCell *cell2 = cell;
+            [cell2.expandBtn setImage:[UIImage imageNamed:@"expandM.png"] forState:UIControlStateNormal];
+        }else{
+            //            TradesTableViewCell *cell2 = [self.tradesTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:self.tradesTableView.expandedContentIndexPath.row-1 inSection:indexPath.section]];
+        [cell2.expandBtn setImage:[UIImage imageNamed:@"expandM.png"] forState:UIControlStateNormal];
+        }
     }
     
     return YES;
 }
 - (void)tableView:(JNExpandableTableView *)tableView willExpand:(NSIndexPath *)indexPath
 {
-//    if ([tableArray containsObject:[NSString stringWithFormat:@"%li",(long)indexPath.row-1]])
-//    {
-//        [tableArray removeObject:[NSString stringWithFormat:@"%li",(long)indexPath.row-1]];
-//    }
-//    else
-//    {
-//        [tableArray addObject:[NSString stringWithFormat:@"%li",(long)indexPath.row-1]];
-//    }
     
     Expand = YES;
-    NSLog(@"Will Expand: %@",indexPath);
+    NSLog(@"Will Expand: %ld",(long)indexPath.row);
+    
+    UITableViewCell *cell = [self.tradesTableView cellForRowAtIndexPath:indexPath];
+
+    if (![self.tradesTableView.expandedContentIndexPath isEqual:indexPath])
+    {
+        UITableViewCell *cell = [self.tradesTableView cellForRowAtIndexPath:indexPath];
+        if ([cell isKindOfClass:[TradesTableViewCell class]]) {
+            //do specific code
+            TradesTableViewCell *cell2 = cell;
+            [cell2.expandBtn setImage:[UIImage imageNamed:@"expandM.png"] forState:UIControlStateNormal];
+            
+        }else{
+//            TradesTableViewCell *cell2 = [self.tradesTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:self.tradesTableView.expandedContentIndexPath.row-1 inSection:indexPath.section]];
+//            [cell2.expandBtn setImage:[UIImage imageNamed:@"expandM.png"] forState:UIControlStateNormal];
+        }
+    }
+    
 }
 - (void)tableView:(JNExpandableTableView *)tableView willCollapse:(NSIndexPath *)indexPath
 {
     Expand = NO;
 
-    NSLog(@"Will Collapse: %@",indexPath);
-}
+    NSLog(@"Will Collapse: %ld",(long)indexPath.row);
+   
+    TradesTableViewCell *cell = [self.tradesTableView cellForRowAtIndexPath:indexPath];
 
+    if (![self.tradesTableView.expandedContentIndexPath isEqual:indexPath])
+    {
+//        TradesTableViewCell *cell = [self.tradesTableView cellForRowAtIndexPath:indexPath];
+        [cell.expandBtn setImage:[UIImage imageNamed:@"expandP.png"] forState:UIControlStateNormal];
+
+    }
+    else{
+//        TradesTableViewCell *cell = [self.tradesTableView cellForRowAtIndexPath:indexPath];
+        [cell.expandBtn setImage:[UIImage imageNamed:@"expandP.png"] forState:UIControlStateNormal];
+    }
+}
 
 #pragma mark - SVPROGRESS HUD
 
@@ -852,5 +1155,124 @@
 }
 
 
+
+
+- (IBAction)calendarBtnTapped:(id)sender {
+    
+    EKEventStore *store = [[EKEventStore alloc] init];
+    
+    if([store respondsToSelector:@selector(requestAccessToEntityType:completion:)])
+    {
+        // iOS 6
+        [store requestAccessToEntityType:EKEntityTypeEvent
+                              completion:^(BOOL granted, NSError *error) {
+                                  if (granted)
+                                  {
+                                      dispatch_async(dispatch_get_main_queue(), ^{
+                                          [self createEventAndPresentViewController:store];
+                                      });
+                                  }
+                              }];
+    } else
+    {
+        // iOS 5
+        [self createEventAndPresentViewController:store];
+    }
+
+}
+
+- (void)createEventAndPresentViewController:(EKEventStore *)store
+{
+    EKEvent *event = [self findOrCreateEvent:store];
+    
+    EKEventEditViewController *controller = [[EKEventEditViewController alloc] init];
+    controller.event = event;
+    controller.eventStore = store;
+    controller.editViewDelegate = self;
+    
+    [self presentViewController:controller animated:YES completion:nil];
+}
+
+- (void)eventEditViewController:(EKEventEditViewController *)controller didCompleteWithAction:(EKEventEditViewAction)action
+{
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (EKEvent *)findOrCreateEvent:(EKEventStore *)store
+{
+    NSString *title = @"Moj";
+    
+    // try to find an event
+    
+    EKEvent *event = [self findEventWithTitle:title inEventStore:store];
+    
+    // if found, use it
+    
+    if (event)
+        return event;
+    
+    // if not, let's create new event
+    
+    event = [EKEvent eventWithEventStore:store];
+    
+    event.title = title;
+    event.notes = @"Alhisba";
+    event.location = @"Kuwait";
+    event.calendar = [store defaultCalendarForNewEvents];
+    
+    NSCalendar *calendar = [NSCalendar currentCalendar];
+    NSDateComponents *components = [[NSDateComponents alloc] init];
+    components.hour = 4;
+    event.startDate = [calendar dateByAddingComponents:components
+                                                toDate:[NSDate date]
+                                               options:0];
+    components.hour = 1;
+    event.endDate = [calendar dateByAddingComponents:components
+                                              toDate:event.startDate
+                                             options:0];
+    
+    return event;
+}
+
+- (EKEvent *)findEventWithTitle:(NSString *)title inEventStore:(EKEventStore *)store
+{
+    // Get the appropriate calendar
+    NSCalendar *calendar = [NSCalendar currentCalendar];
+    
+    // Create the start range date components
+    NSDateComponents *oneDayAgoComponents = [[NSDateComponents alloc] init];
+    oneDayAgoComponents.day = -1;
+    NSDate *oneDayAgo = [calendar dateByAddingComponents:oneDayAgoComponents
+                                                  toDate:[NSDate date]
+                                                 options:0];
+    
+    // Create the end range date components
+    NSDateComponents *oneWeekFromNowComponents = [[NSDateComponents alloc] init];
+    oneWeekFromNowComponents.day = 7;
+    NSDate *oneWeekFromNow = [calendar dateByAddingComponents:oneWeekFromNowComponents
+                                                       toDate:[NSDate date]
+                                                      options:0];
+    
+    // Create the predicate from the event store's instance method
+    NSPredicate *predicate = [store predicateForEventsWithStartDate:oneDayAgo
+                                                            endDate:oneWeekFromNow
+                                                          calendars:nil];
+    
+    // Fetch all events that match the predicate
+    NSArray *events = [store eventsMatchingPredicate:predicate];
+    
+    for (EKEvent *event in events)
+    {
+        if ([title isEqualToString:event.title])
+        {
+            return event;
+        }
+    }
+    
+    return nil;
+}
+
+
 @end
+
 

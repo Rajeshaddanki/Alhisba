@@ -11,6 +11,7 @@
 #import "HomeViewController.h"
 #import "ForgotPasswordViewController.h"
 //#import "OfficialApraisalViewController.h"
+#import "PostAddViewController.h"
 
 @interface LoginOrSignUpViewController ()<UIScrollViewDelegate>
 {
@@ -47,8 +48,10 @@
     
 //    self.navigationController.navigationBar.barTintColor = [UIColor colorWithRed:21.0f/255.0f green:46.0f/255.0f blue:95.0f/255.0f alpha:1.0f];
     
-    self.navigationController.navigationBar.barTintColor = [UIColor colorWithRed:19.0f/255.0f green:40.0f/255.0f blue:83.0f/255.0f alpha:1.0f];
+//    self.navigationController.navigationBar.barTintColor = [UIColor colorWithRed:22.0f/255.0f green:46.0f/255.0f blue:95.0f/255.0f alpha:1.0f];
     
+    self.navigationController.navigationBar.barTintColor = [UIColor colorWithRed:30.0f/255.0f green:69.0f/255.0f blue:142.0f/255.0f alpha:1.0f];
+
     // barTintColor sets the background color
     
     self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
@@ -104,6 +107,10 @@
         UIBarButtonItem *customBarRightBtn = [[UIBarButtonItem alloc] initWithCustomView:backBtn];
         self.navigationItem.leftBarButtonItems = [NSArray arrayWithObjects:customBarRightBtn,nil];
         
+        _loginCenterConstraint.constant = 60;
+        
+        _loginLoginCenterContraint.constant = 60;
+        
     }
     else{
         backBtn = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -112,6 +119,9 @@
         [backBtn addTarget:self action:@selector(backBtnTapped) forControlEvents:UIControlEventTouchUpInside];
         UIBarButtonItem *customBarRightBtn = [[UIBarButtonItem alloc] initWithCustomView:backBtn];
         self.navigationItem.leftBarButtonItems = [NSArray arrayWithObjects:customBarRightBtn,nil];
+        
+        _loginCenterConstraint.constant = -60;
+        _loginLoginCenterContraint.constant = -60;
     }
 
     UIColor *color = [UIColor colorWithRed:80.0f/255.0f green:99.0f/255.0f blue:139.0f/255.0f alpha:1.0f];
@@ -246,6 +256,15 @@
                                                                    
                                                                    [self.navigationController popViewControllerAnimated:NO];
                                                                }
+            else if ([_fromPostAdd isEqualToString:@"fromPostAdd"]){
+                
+//                PostAddViewController *obj = [self.storyboard instantiateViewControllerWithIdentifier:@"PostAddViewController"];
+//                [self.navigationController pushViewController:obj animated:YES];
+                
+                [self.navigationController popViewControllerAnimated:YES];
+            
+                
+            }
                                                                else{
                                                                    HomeViewController *obj = [self.storyboard instantiateViewControllerWithIdentifier:@"HomeViewController"];
                                                                    [self.navigationController pushViewController:obj animated:YES];
@@ -324,7 +343,9 @@
 //    self.navigationController.navigationBar.translucent = YES;
 //    self.navigationController.view.backgroundColor = [UIColor clearColor];
     
-    self.navigationController.navigationBar.barTintColor = [UIColor colorWithRed:19.0f/255.0f green:40.0f/255.0f blue:83.0f/255.0f alpha:1.0f];
+ //   self.navigationController.navigationBar.barTintColor = [UIColor colorWithRed:22.0f/255.0f green:46.0f/255.0f blue:95.0f/255.0f alpha:1.0f];
+    self.navigationController.navigationBar.barTintColor = [UIColor colorWithRed:30.0f/255.0f green:69.0f/255.0f blue:142.0f/255.0f alpha:1.0f];
+
     self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
     self.navigationController.navigationBar.translucent = NO;
 
@@ -336,6 +357,8 @@
 }
 
 - (IBAction)signUploginBtnClicked:(id)sender {
+    
+    
     
     [self signUpViewHidden];
 }
@@ -419,6 +442,9 @@
     _signUpLogo.hidden = YES;
     _signUpView.hidden = YES;
     _signUpBackground.hidden = YES;
+    [_loginBtn setBackgroundColor:[UIColor colorWithRed:211.0f/255.0f green:174.0f/255.0f blue:41.0f/255.0f alpha:1.0f]];
+    
+    
 }
 -(void)signUpViewNotHidden{
     
@@ -455,6 +481,8 @@
     _signUpLogo.hidden = NO;
     _signUpView.hidden = NO;
     _signUpBackground.hidden = NO;
+    
+    [_loginBtn setBackgroundColor:[UIColor clearColor]];
 }
 
 - (BOOL)textField:(UITextField *) textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
@@ -534,11 +562,11 @@
   //      _passwordFld.layer.borderWidth = 2.0f;
         _passwordFld.layer.cornerRadius = 15.0f;
     
-    _signUpLogin.layer.cornerRadius = 15.0f;
-    _signUpSignUp.layer.cornerRadius = 15.0f;
+    _signUpLogin.layer.cornerRadius = 10.0f;
+    _signUpSignUp.layer.cornerRadius = 10.0f;
     _signUpMainBtn.layer.cornerRadius = 15.0f;
     
-    _loginBtn.layer.cornerRadius = 15.0f;
+    _loginBtn.layer.cornerRadius = 10.0f;
 //    _loginOrSign.layer.cornerRadius = 15.0f;
     _mainLoginBtn.layer.cornerRadius = 15.0f;
     

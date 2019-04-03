@@ -7,6 +7,8 @@
 //
 
 #import "SelectAreaViewController.h"
+#import "SVProgressHUD.h"
+
 
 @interface SelectAreaViewController () <UITableViewDelegate, UITableViewDataSource,UISearchBarDelegate>
 @property (weak, nonatomic) IBOutlet UINavigationBar *navigationBar;
@@ -37,6 +39,8 @@
 //        self.navItem.leftBarButtonItem = closeButton;
 //    }
     
+   
+    
     self.navItem.title = Localized(@"Select Area");
     [self.navigationBar setTitleTextAttributes:
      @{NSForegroundColorAttributeName:[UIColor whiteColor]}];
@@ -44,11 +48,16 @@
     if ([self.restId length] > 0) {
         [dictionary setValue:self.restId forKey:@"rest_id"];
     }
+    
+    [self showHUD:@""];
+    
     self.areas=_areasList;
     if([_from  isEqual: @"register"]){
+        
     [self makePostCallForPage:REGISTERD_TRADES_FILTER
                    withParams:nil
               withRequestCode:11];
+        
     }else{
         [self makePostCallForPage:LIVE_AREAS
                        withParams:nil
@@ -118,6 +127,9 @@
 }
 
 -(void)calServiceWithString{
+    
+    [self showHUD:@""];
+    
     if(![_from  isEqual: @"register"]){
 
     [self makePostCallForPage:LIVE_AREAS withParams:@{@"search":_searchBar.text}  withRequestCode:1];
@@ -145,7 +157,6 @@
 //    for (NSDictionary *dictionary in array) {
 //        [self.areas addObject:[Country instanceFromDictionary:dictionary]];
 //    }
-    [self hideHUD];
     self.areas = array.mutableCopy;
     [self.tableView reloadData];
     }else{
@@ -160,8 +171,11 @@
             self.areas =[[result valueForKey:@"areas"] valueForKey:@"area_english"];
 
         }
+        
         [self.tableView reloadData];
     }
+    
+    [self hideHUD];
 }
 
 - (void)close {
@@ -203,7 +217,12 @@
             cell.textLabel.text = [NSString stringWithFormat:@"%@",[[self.areas objectAtIndex:indexPath.row] valueForKey:@"value_english"]];
         }
         
-       cell.textLabel.textColor =  [UIColor colorWithRed:19.0f/255.0f green:40.0f/255.0f blue:83.0f/255.0f alpha:1.0f];
+        [cell.textLabel setTextAlignment:NSTextAlignmentCenter];
+        
+        cell.textLabel.textColor =  [UIColor colorWithRed:19.0f/255.0f green:40.0f/255.0f blue:83.0f/255.0f alpha:1.0f];
+        
+        [cell.textLabel setFont:[UIFont fontWithName:@"Cairo-Bold" size:16]];
+
 
 }
     return cell;
@@ -235,20 +254,42 @@
 //    Country *country = [self.areas objectAtIndex:indexPath.section];
 //    CountryArea *cat = [country.areas objectAtIndex:indexPath.row];
     if(![_from  isEqual: @"register"]){
-
-NSMutableDictionary *str=[self.areas objectAtIndex:indexPath.row];
-    self.completionBlock(str);
+        NSString *str1;
+        if([[Utils getLanguage] isEqual:KEY_LANGUAGE_AR]){
+           str1=[[self.areas valueForKey:@"value_arabic"] objectAtIndex:indexPath.row];
+        }
+        else{
+           str1=[[self.areas valueForKey:@"value_english"] objectAtIndex:indexPath.row];
+        }
+        
+        NSUserDefaults *sta = [NSUserDefaults standardUserDefaults];
+        [sta setObject:[[self.areas valueForKey:@"id"] objectAtIndex:indexPath.row] forKey:@"auctAreaid"];
+        [sta synchronize];
+        
+    self.completionBlock2(str1);
     [self.delegate cancelButtonClicked:self];
     }else{
         NSString *str=[self.areas objectAtIndex:indexPath.row];
         self.completionBlock2(str);
         [self.delegate cancelButtonClicked:self];
     }
+
 }
 
 
 - (IBAction)close:(id)sender {
     [self.delegate cancelButtonClicked:self];
 
+}
+
+#pragma mark - SVPROGRESS HUD
+
+- (void) showHUD:(NSString *)labelText {
+    [SVProgressHUD showWithMaskType:SVProgressHUDMaskTypeGradient];
+}
+
+- (void) hideHUD {
+    
+    [SVProgressHUD dismissWithDelay:(NSTimeInterval) 0.2f];
 }
 @end

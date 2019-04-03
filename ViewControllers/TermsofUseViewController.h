@@ -14,4 +14,7 @@
 
 @property (weak, nonatomic) IBOutlet UITextView *textviewT;
 
+- (IBAction)backBtnTapped:(id)sender;
+
+
 @end

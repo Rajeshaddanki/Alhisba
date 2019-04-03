@@ -18,4 +18,7 @@
 
 @property (weak, nonatomic) IBOutlet UIView *cellBackView;
 
+@property (weak, nonatomic) IBOutlet UIButton *closeBtnTapped;
+
+
 @end

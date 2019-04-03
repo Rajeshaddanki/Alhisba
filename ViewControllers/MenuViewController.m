@@ -39,7 +39,7 @@
     // Do any additional setup after loading the view.
     
     [_loginBtn setTitle:Localized(@"Login") forState:UIControlStateNormal];
-    [_signUpBtn setTitle:Localized(@"Sign Up") forState:UIControlStateNormal];
+    [_signUpBtn setTitle:Localized(@"SignUp") forState:UIControlStateNormal];
     
     _loginBtn.layer.cornerRadius = 10.0f;
     _loginBtn.clipsToBounds = YES;
@@ -54,25 +54,151 @@
     
     _afterLoginView.hidden = YES;
     _userName.hidden = YES;
+     _dollarIcon.hidden = YES;
     _emailId.hidden = YES;
     _logOutBtn.hidden = YES;
     _logOutIcon.hidden = YES;
     
     [self gradientLayer];
     
+    
+    _ourSocialMediaLbl.text = Localized(@"Our Social Media");
+    
     if ([[Utils getLanguage] isEqualToString:KEY_LANGUAGE_AR]) {
         
-        _mainViewtailingConstraint.constant = 16;
+      //  _mainViewtailingConstraint.constant = 16;
         _imageCenterConstraint.constant = 30;
         
     }
     else{
         
-        _mainViewtailingConstraint.constant = -16;
+    //    _mainViewtailingConstraint.constant = -16;
         _imageCenterConstraint.constant = -30;
         
     }
     
+    
+
+    imagesArray = [[NSMutableArray alloc]initWithObjects:@"news.png",@"About us.png",@"Contact Us.png",@"Privacy Policy.png",@"FAQ.png",@"Terms and Conditions.png",@"Share Alhisba App.png",@"Share Alhisba App.png",@"Articles.png", nil];
+    
+    titlesArray = @[Localized(@"News/Articles"),Localized(@"About Us"),Localized(@"Contact Us"),Localized(@"Privacy Policy"),Localized(@"FAQ"),Localized(@"Terms and conditions"),Localized(@"Rate the App"),Localized(@"Language")];
+    
+    _tableviewHeight.constant = titlesArray.count * 50;
+    
+    [self.navigationController.navigationBar setHidden:YES];
+    
+    _valid = [[NSUserDefaults standardUserDefaults] valueForKey:@"customer_id"];
+    
+    NSLog(@"valid Details are %@",_valid);
+    
+    NSString *strin = _valid;
+    if([strin class]==NULL){
+        strin=@"";
+    }
+    if ([strin length]>0) {
+        
+        _loginBtn.hidden = YES;
+        _menuTopView.hidden = YES;
+        _signUpBtn.hidden = YES;
+        _logOutBtn.hidden = NO;
+        _logOutIcon.hidden = NO;
+        _afterLoginView.hidden = NO;
+        _logoImage.hidden = YES;
+        _userName.hidden = NO;
+        _dollarIcon.hidden = NO;
+        _emailId.hidden = NO;
+        
+        // [self showHUD:@""];
+        
+        NSString *str = [[NSUserDefaults standardUserDefaults] valueForKey:@"emailId"];
+        
+        if (str.length == 0) {
+            
+            [self makePostCallForPage:MEMBERS withParams:@{@"member_id":[[NSUserDefaults standardUserDefaults] valueForKey:@"customer_id"]} withRequestCode:100];
+        }
+        else{
+            _emailId.text = [[NSUserDefaults standardUserDefaults] valueForKey:@"emailId"];
+            _userName.text = [[NSUserDefaults standardUserDefaults] valueForKey:@"userName"];
+            _emailId.hidden = NO;
+            _userName.hidden = NO;
+            _afterLoginView.hidden = NO;
+            _userName.hidden = NO;
+            _dollarIcon.hidden = NO;
+            _emailId.hidden = NO;
+        }
+        
+        
+        if ([[Utils getLanguage] isEqualToString:KEY_LANGUAGE_AR]) {
+            
+            //            _mainViewtailingConstraint.constant = 16;
+            _imageCenterConstraint.constant = 30;
+            
+        }
+        else{
+            
+            //            _mainViewtailingConstraint.constant = -16;
+            _imageCenterConstraint.constant = -30;
+            
+        }
+        
+        
+        [self gradientLayer];
+        [_logOutBtn setTitle:Localized(@"Log Out") forState:UIControlStateNormal];
+        
+        self.navigationController.navigationBar.translucent = YES;
+        self.navigationController.view.backgroundColor = [UIColor colorWithRed:245.0f/255.0f green:190.0f/255.0f blue:74.0f/255.0f alpha:1];
+        
+        //        _userName.text = [[NSUserDefaults standardUserDefaults] valueForKey:@"userName"];
+        //
+        //        _emailId.text = [[NSUserDefaults standardUserDefaults] valueForKey:@"Email"];
+        
+        imagesArray = [[NSMutableArray alloc]initWithObjects:@"news.png",@"About us.png",@"Contact Us.png",@"Privacy Policy.png",@"FAQ.png",@"Terms and Conditions.png",@"Share Alhisba App.png",@"Share Alhisba App.png",@"Articles.png", nil];
+        
+        titlesArray = @[Localized(@"News/Articles"),Localized(@"About Us"),Localized(@"Contact Us"),Localized(@"Privacy Policy"),Localized(@"FAQ"),Localized(@"Terms and conditions"),Localized(@"Share Alhisba App"),Localized(@"Rate the App"),Localized(@"Language")];
+        
+        _tableviewHeight.constant = titlesArray.count * 50;
+        
+        
+    }else{
+        
+        _loginBtn.hidden = NO;
+        _menuTopView.hidden = NO;
+        _signUpBtn.hidden = NO;
+        _logOutBtn.hidden = YES;
+        _logOutIcon.hidden = YES;
+        _afterLoginView.hidden = YES;
+        _logoImage.hidden = NO;
+        
+        _userName.hidden = YES;
+        _dollarIcon.hidden = YES;
+        _emailId.hidden = YES;
+        
+        [self gradientLayer];
+        
+        [_logOutBtn setTitle:Localized(@"Log Out") forState:UIControlStateNormal];
+        [self.navigationController.navigationBar setBackgroundImage:[UIImage new]
+                                                      forBarMetrics:UIBarMetricsDefault];//UIImageNamed:@"transparent.png"
+        self.navigationController.navigationBar.shadowImage = [UIImage new];////UIImageNamed:@"transparent.png"
+        self.navigationController.navigationBar.translucent = YES;
+        self.navigationController.view.backgroundColor = [UIColor clearColor];
+        
+        imagesArray = [[NSMutableArray alloc]initWithObjects:@"news.png",@"About us.png",@"Contact Us.png",@"Privacy Policy.png",@"FAQ.png",@"Terms and Conditions.png",@"Share Alhisba App.png",@"Share Alhisba App.png",@"Articles.png", nil];
+        
+        titlesArray = @[Localized(@"News/Articles"),Localized(@"About Us"),Localized(@"Contact Us"),Localized(@"Privacy Policy"),Localized(@"FAQ"),Localized(@"Terms and conditions"),Localized(@"Share Alhisba App"),Localized(@"Rate the App"),Localized(@"Language")];
+        
+        
+        _tableviewHeight.constant = titlesArray.count * 50;
+        
+        //        self.revealViewController.rearViewRevealWidth = self.view.frame.size.width-100;
+    }
+    
+    [_menuTableView reloadData];
+    
+}
+
+- (void)didChangeRating:(NSNumber*)newRating
+{
+    NSLog(@"didChangeRating: %@",newRating);
 }
 
 #pragma Parse Function .......
@@ -95,94 +221,438 @@
     _userName.text = [[NSUserDefaults standardUserDefaults] valueForKey:@"userName"];
     
     [self hideHUD];
-
 }
 
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    if (indexPath.row == 0) {
-        
-        [self.navigationController.navigationBar setHidden:YES];
-
-        NewViewController *loginView = [self.storyboard instantiateViewControllerWithIdentifier:@"NewViewController"];
-        UINavigationController *navigationController1 = [[UINavigationController alloc] initWithRootViewController:loginView];
-        [self.revealViewController pushFrontViewController:navigationController1 animated:YES];
-    }
-    else if (indexPath.row == 1) {
-        
-        [self.navigationController.navigationBar setHidden:YES];
-        
-        articlesViewController *aboutUs = [self.storyboard instantiateViewControllerWithIdentifier:@"articlesViewController"];
-        UINavigationController *navigationController1 = [[UINavigationController alloc] initWithRootViewController:aboutUs];
-        [self.revealViewController pushFrontViewController:navigationController1 animated:YES];
-    }
-   else if (indexPath.row == 2) {
-       
-       [self.navigationController.navigationBar setHidden:YES];
-
-        AboutUsViewController *aboutUs = [self.storyboard instantiateViewControllerWithIdentifier:@"AboutUsViewController"];
-        UINavigationController *navigationController1 = [[UINavigationController alloc] initWithRootViewController:aboutUs];
-        [self.revealViewController pushFrontViewController:navigationController1 animated:YES];
-    }
-   else if (indexPath.row == 3) {
-       
-       [self.navigationController.navigationBar setHidden:YES];
-       
-       ContactUsViewController *aboutUs = [self.storyboard instantiateViewControllerWithIdentifier:@"ContactUsViewController"];
-       UINavigationController *navigationController1 = [[UINavigationController alloc] initWithRootViewController:aboutUs];
-       [self.revealViewController pushFrontViewController:navigationController1 animated:YES];
-   }
     
-   else if (indexPath.row == 4) {
-       
-       [self.navigationController.navigationBar setHidden:YES];
-       
-       PrivacyPolicyViewController *privacy = [self.storyboard instantiateViewControllerWithIdentifier:@"PrivacyPolicyViewController"];
-       UINavigationController *navigationController1 = [[UINavigationController alloc] initWithRootViewController:privacy];
-       [self.revealViewController pushFrontViewController:navigationController1 animated:YES];
-   }
-   else if (indexPath.row == 5) {
-       
-       [self.navigationController.navigationBar setHidden:YES];
-       
-       FaqsViewController *privacy = [self.storyboard instantiateViewControllerWithIdentifier:@"FaqsViewController"];
-       UINavigationController *navigationController1 = [[UINavigationController alloc] initWithRootViewController:privacy];
-       [self.revealViewController pushFrontViewController:navigationController1 animated:YES];
-   }
-   else if (indexPath.row == 6) {
-       
-       [self.navigationController.navigationBar setHidden:YES];
-       
-       TermsofUseViewController *privacy = [self.storyboard instantiateViewControllerWithIdentifier:@"TermsofUseViewController"];
-       UINavigationController *navigationController1 = [[UINavigationController alloc] initWithRootViewController:privacy];
-       [self.revealViewController pushFrontViewController:navigationController1 animated:YES];
-   }
-   else if (indexPath.row == 7) {
-       
-       NSURL *url = [NSURL URLWithString:@"http://alhisba.com/download/"];
-       
-       NSMutableArray *activityItems = [NSMutableArray arrayWithObjects: url, nil];
-       
-       UIActivityViewController *activityViewController = [[UIActivityViewController alloc]initWithActivityItems:activityItems applicationActivities:nil];
-       activityViewController.excludedActivityTypes = @[
-                                                        UIActivityTypePrint,
-                                                        UIActivityTypeCopyToPasteboard,
-                                                        UIActivityTypeAssignToContact,
-                                                        UIActivityTypeSaveToCameraRoll,
-                                                        UIActivityTypeAddToReadingList,
-                                                        UIActivityTypeAirDrop];
-       
-       
-       [self presentViewController:activityViewController animated:YES completion:nil];   }
+    NSString *strin = _valid;
+    if([strin class]==NULL){
+        strin=@"";
+    }
+    if ([strin length]>0) {
+        
+        if (indexPath.row == 0) {
+            
+            if ([[Utils getLanguage] isEqualToString:KEY_LANGUAGE_AR]) {
+                
+                [self.revealViewController rightRevealToggleAnimated:NO];
+                
+            }
+            else{
+                [self.revealViewController revealToggleAnimated:NO];
+                
+            }
+            NSDictionary *userInfo =
+            [NSDictionary dictionaryWithObject:@"account" forKey:@"raj"];
+            [[NSNotificationCenter defaultCenter] postNotificationName:
+             @"TestNotification" object:self userInfo:userInfo];
+
+        }
+
+      else if (indexPath.row == 1) {
+            
+            
+            if ([[Utils getLanguage] isEqualToString:KEY_LANGUAGE_AR]) {
+                
+                [self.revealViewController rightRevealToggleAnimated:NO];
+                
+            }
+            else{
+                [self.revealViewController revealToggleAnimated:NO];
+                
+            }
+            NSDictionary *userInfo =
+            [NSDictionary dictionaryWithObject:@"news" forKey:@"raj"];
+            [[NSNotificationCenter defaultCenter] postNotificationName:
+             @"TestNotification" object:self userInfo:userInfo];
+            
+        }
+        else if (indexPath.row == 9) {
+            
+            if ([[Utils getLanguage] isEqualToString:KEY_LANGUAGE_AR]) {
+                
+                [Utils setLanguage:KEY_LANGUAGE_EN];
+                [[MCLocalization sharedInstance] setLanguage:KEY_LANGUAGE_EN];
+                
+            } else {
+                [Utils setLanguage:KEY_LANGUAGE_AR];
+                [[MCLocalization sharedInstance] setLanguage:KEY_LANGUAGE_AR];
+                
+            }
+            
+            [APP_DELEGATE reloadUIForLanguageChange];
+            [APP_DELEGATE afterLoginSucess];
+            
+            [self.navigationController.navigationBar setHidden:YES];
+            
+            if ([[Utils getLanguage] isEqualToString:KEY_LANGUAGE_AR]) {
+                
+                [self.revealViewController rightRevealToggleAnimated:NO];
+                
+            }
+            else{
+                [self.revealViewController revealToggleAnimated:NO];
+                
+            }
+            
+            NSDictionary *userInfo =
+            [NSDictionary dictionaryWithObject:@"home" forKey:@"raj"];
+            [[NSNotificationCenter defaultCenter] postNotificationName:
+             @"TestNotification" object:self userInfo:userInfo];
+            
+        }
+        
+        else if (indexPath.row == 2) {
+            
+            [self.navigationController.navigationBar setHidden:YES];
+            
+            //        AboutUsViewController *aboutUs = [self.storyboard instantiateViewControllerWithIdentifier:@"AboutUsViewController"];
+            //        UINavigationController *navigationController1 = [[UINavigationController alloc] initWithRootViewController:aboutUs];
+            //        [self.revealViewController pushFrontViewController:navigationController1 animated:YES];
+            
+            if ([[Utils getLanguage] isEqualToString:KEY_LANGUAGE_AR]) {
+                
+                [self.revealViewController rightRevealToggleAnimated:NO];
+                
+            }
+            else{
+                [self.revealViewController revealToggleAnimated:NO];
+                
+            }
+            
+            NSDictionary *userInfo =
+            [NSDictionary dictionaryWithObject:@"about" forKey:@"raj"];
+            [[NSNotificationCenter defaultCenter] postNotificationName:
+             @"TestNotification" object:self userInfo:userInfo];
+            
+        }
+        else if (indexPath.row == 3) {
+            
+            //       [self.navigationController.navigationBar setHidden:YES];
+            //
+            //       ContactUsViewController *aboutUs = [self.storyboard instantiateViewControllerWithIdentifier:@"ContactUsViewController"];
+            //       UINavigationController *navigationController1 = [[UINavigationController alloc] initWithRootViewController:aboutUs];
+            //       [self.revealViewController pushFrontViewController:navigationController1 animated:YES];
+            
+            if ([[Utils getLanguage] isEqualToString:KEY_LANGUAGE_AR]) {
+                
+                [self.revealViewController rightRevealToggleAnimated:NO];
+                
+            }
+            else{
+                [self.revealViewController revealToggleAnimated:NO];
+                
+            }
+            NSDictionary *userInfo =
+            [NSDictionary dictionaryWithObject:@"contact" forKey:@"raj"];
+            [[NSNotificationCenter defaultCenter] postNotificationName:
+             @"TestNotification" object:self userInfo:userInfo];
+            
+        }
+        
+        else if (indexPath.row == 4) {
+            
+            //       [self.navigationController.navigationBar setHidden:YES];
+            //
+            //       PrivacyPolicyViewController *privacy = [self.storyboard instantiateViewControllerWithIdentifier:@"PrivacyPolicyViewController"];
+            //       UINavigationController *navigationController1 = [[UINavigationController alloc] initWithRootViewController:privacy];
+            //       [self.revealViewController pushFrontViewController:navigationController1 animated:YES];
+            
+            if ([[Utils getLanguage] isEqualToString:KEY_LANGUAGE_AR]) {
+                
+                [self.revealViewController rightRevealToggleAnimated:NO];
+                
+            }
+            else{
+                [self.revealViewController revealToggleAnimated:NO];
+                
+            }
+            NSDictionary *userInfo =
+            [NSDictionary dictionaryWithObject:@"privacy" forKey:@"raj"];
+            [[NSNotificationCenter defaultCenter] postNotificationName:
+             @"TestNotification" object:self userInfo:userInfo];
+            
+        }
+        else if (indexPath.row == 5) {
+            
+            //    [self.navigationController.navigationBar setHidden:YES];
+            //       FaqsViewController *privacy = [self.storyboard instantiateViewControllerWithIdentifier:@"FaqsViewController"];
+            //       UINavigationController *navigationController1 = [[UINavigationController alloc] initWithRootViewController:privacy];
+            //       [self.revealViewController pushFrontViewController:navigationController1 animated:YES];
+            
+            if ([[Utils getLanguage] isEqualToString:KEY_LANGUAGE_AR]) {
+                
+                [self.revealViewController rightRevealToggleAnimated:NO];
+                
+            }
+            else{
+                [self.revealViewController revealToggleAnimated:NO];
+                
+            }
+            NSDictionary *userInfo =
+            [NSDictionary dictionaryWithObject:@"faqs" forKey:@"raj"];
+            [[NSNotificationCenter defaultCenter] postNotificationName:
+             @"TestNotification" object:self userInfo:userInfo];
+            
+        }
+        else if (indexPath.row == 6) {
+            
+            //       [self.revealViewController revealToggleAnimated:NO];
+            
+            //       [self.navigationController.navigationBar setHidden:YES];
+            //       TermsofUseViewController *privacy = [self.storyboard instantiateViewControllerWithIdentifier:@"TermsofUseViewController"];
+            //       UINavigationController *navigationController1 = [[UINavigationController alloc] initWithRootViewController:privacy];
+            //       [self.revealViewController pushFrontViewController:navigationController1 animated:YES];
+            
+            //       [[NSNotificationCenter defaultCenter]
+            //        postNotificationName:@"TestNotification"
+            //        object:self];
+            
+            if ([[Utils getLanguage] isEqualToString:KEY_LANGUAGE_AR]) {
+                
+                [self.revealViewController rightRevealToggleAnimated:NO];
+                
+            }
+            else{
+                [self.revealViewController revealToggleAnimated:NO];
+                
+            }
+            
+            NSDictionary *userInfo =
+            [NSDictionary dictionaryWithObject:@"terms" forKey:@"raj"];
+            [[NSNotificationCenter defaultCenter] postNotificationName:
+             @"TestNotification" object:self userInfo:userInfo];
+            
+            
+        }
+        else if (indexPath.row == 7) {
+            
+            NSURL *url = [NSURL URLWithString:@"http://alhisba.com/download/"];
+            
+            NSMutableArray *activityItems = [NSMutableArray arrayWithObjects: url, nil];
+            
+            UIActivityViewController *activityViewController = [[UIActivityViewController alloc]initWithActivityItems:activityItems applicationActivities:nil];
+            activityViewController.excludedActivityTypes = @[
+                                                             UIActivityTypePrint,
+                                                             UIActivityTypeCopyToPasteboard,
+                                                             UIActivityTypeAssignToContact,
+                                                             UIActivityTypeSaveToCameraRoll,
+                                                             UIActivityTypeAddToReadingList,
+                                                             UIActivityTypeAirDrop];
+            
+            
+            [self presentViewController:activityViewController animated:YES completion:nil];   }
+        
+    }
+    
+    else{
+        
+        if (indexPath.row == 0) {
+            
+            
+            if ([[Utils getLanguage] isEqualToString:KEY_LANGUAGE_AR]) {
+                
+                [self.revealViewController rightRevealToggleAnimated:NO];
+                
+            }
+            else{
+                [self.revealViewController revealToggleAnimated:NO];
+                
+            }
+            NSDictionary *userInfo =
+            [NSDictionary dictionaryWithObject:@"news" forKey:@"raj"];
+            [[NSNotificationCenter defaultCenter] postNotificationName:
+             @"TestNotification" object:self userInfo:userInfo];
+            
+        }
+        else if (indexPath.row == 8) {
+            
+            if ([[Utils getLanguage] isEqualToString:KEY_LANGUAGE_AR]) {
+                
+                [Utils setLanguage:KEY_LANGUAGE_EN];
+                [[MCLocalization sharedInstance] setLanguage:KEY_LANGUAGE_EN];
+                
+            } else {
+                [Utils setLanguage:KEY_LANGUAGE_AR];
+                [[MCLocalization sharedInstance] setLanguage:KEY_LANGUAGE_AR];
+                
+            }
+            
+            [APP_DELEGATE reloadUIForLanguageChange];
+            [APP_DELEGATE afterLoginSucess];
+            
+            [self.navigationController.navigationBar setHidden:YES];
+            
+            if ([[Utils getLanguage] isEqualToString:KEY_LANGUAGE_AR]) {
+                
+                [self.revealViewController rightRevealToggleAnimated:NO];
+                
+            }
+            else{
+                [self.revealViewController revealToggleAnimated:NO];
+                
+            }
+            
+            NSDictionary *userInfo =
+            [NSDictionary dictionaryWithObject:@"home" forKey:@"raj"];
+            [[NSNotificationCenter defaultCenter] postNotificationName:
+             @"TestNotification" object:self userInfo:userInfo];
+            
+        }
+        
+        else if (indexPath.row == 1) {
+            
+            [self.navigationController.navigationBar setHidden:YES];
+            
+            //        AboutUsViewController *aboutUs = [self.storyboard instantiateViewControllerWithIdentifier:@"AboutUsViewController"];
+            //        UINavigationController *navigationController1 = [[UINavigationController alloc] initWithRootViewController:aboutUs];
+            //        [self.revealViewController pushFrontViewController:navigationController1 animated:YES];
+            
+            if ([[Utils getLanguage] isEqualToString:KEY_LANGUAGE_AR]) {
+                
+                [self.revealViewController rightRevealToggleAnimated:NO];
+                
+            }
+            else{
+                [self.revealViewController revealToggleAnimated:NO];
+                
+            }
+            
+            NSDictionary *userInfo =
+            [NSDictionary dictionaryWithObject:@"about" forKey:@"raj"];
+            [[NSNotificationCenter defaultCenter] postNotificationName:
+             @"TestNotification" object:self userInfo:userInfo];
+            
+        }
+        else if (indexPath.row == 2) {
+            
+            //       [self.navigationController.navigationBar setHidden:YES];
+            //
+            //       ContactUsViewController *aboutUs = [self.storyboard instantiateViewControllerWithIdentifier:@"ContactUsViewController"];
+            //       UINavigationController *navigationController1 = [[UINavigationController alloc] initWithRootViewController:aboutUs];
+            //       [self.revealViewController pushFrontViewController:navigationController1 animated:YES];
+            
+            if ([[Utils getLanguage] isEqualToString:KEY_LANGUAGE_AR]) {
+                
+                [self.revealViewController rightRevealToggleAnimated:NO];
+                
+            }
+            else{
+                [self.revealViewController revealToggleAnimated:NO];
+                
+            }
+            NSDictionary *userInfo =
+            [NSDictionary dictionaryWithObject:@"contact" forKey:@"raj"];
+            [[NSNotificationCenter defaultCenter] postNotificationName:
+             @"TestNotification" object:self userInfo:userInfo];
+            
+        }
+        
+        else if (indexPath.row == 3) {
+            
+            //       [self.navigationController.navigationBar setHidden:YES];
+            //
+            //       PrivacyPolicyViewController *privacy = [self.storyboard instantiateViewControllerWithIdentifier:@"PrivacyPolicyViewController"];
+            //       UINavigationController *navigationController1 = [[UINavigationController alloc] initWithRootViewController:privacy];
+            //       [self.revealViewController pushFrontViewController:navigationController1 animated:YES];
+            
+            if ([[Utils getLanguage] isEqualToString:KEY_LANGUAGE_AR]) {
+                
+                [self.revealViewController rightRevealToggleAnimated:NO];
+                
+            }
+            else{
+                [self.revealViewController revealToggleAnimated:NO];
+                
+            }
+            NSDictionary *userInfo =
+            [NSDictionary dictionaryWithObject:@"privacy" forKey:@"raj"];
+            [[NSNotificationCenter defaultCenter] postNotificationName:
+             @"TestNotification" object:self userInfo:userInfo];
+            
+        }
+        else if (indexPath.row == 4) {
+            
+            //    [self.navigationController.navigationBar setHidden:YES];
+            //       FaqsViewController *privacy = [self.storyboard instantiateViewControllerWithIdentifier:@"FaqsViewController"];
+            //       UINavigationController *navigationController1 = [[UINavigationController alloc] initWithRootViewController:privacy];
+            //       [self.revealViewController pushFrontViewController:navigationController1 animated:YES];
+            
+            if ([[Utils getLanguage] isEqualToString:KEY_LANGUAGE_AR]) {
+                
+                [self.revealViewController rightRevealToggleAnimated:NO];
+                
+            }
+            else{
+                [self.revealViewController revealToggleAnimated:NO];
+                
+            }
+            NSDictionary *userInfo =
+            [NSDictionary dictionaryWithObject:@"faqs" forKey:@"raj"];
+            [[NSNotificationCenter defaultCenter] postNotificationName:
+             @"TestNotification" object:self userInfo:userInfo];
+            
+        }
+        else if (indexPath.row == 5) {
+            
+            //       [self.revealViewController revealToggleAnimated:NO];
+            
+            //       [self.navigationController.navigationBar setHidden:YES];
+            //       TermsofUseViewController *privacy = [self.storyboard instantiateViewControllerWithIdentifier:@"TermsofUseViewController"];
+            //       UINavigationController *navigationController1 = [[UINavigationController alloc] initWithRootViewController:privacy];
+            //       [self.revealViewController pushFrontViewController:navigationController1 animated:YES];
+            
+            //       [[NSNotificationCenter defaultCenter]
+            //        postNotificationName:@"TestNotification"
+            //        object:self];
+            
+            if ([[Utils getLanguage] isEqualToString:KEY_LANGUAGE_AR]) {
+                
+                [self.revealViewController rightRevealToggleAnimated:NO];
+                
+            }
+            else{
+                [self.revealViewController revealToggleAnimated:NO];
+                
+            }
+            
+            NSDictionary *userInfo =
+            [NSDictionary dictionaryWithObject:@"terms" forKey:@"raj"];
+            [[NSNotificationCenter defaultCenter] postNotificationName:
+             @"TestNotification" object:self userInfo:userInfo];
+            
+            
+        }
+        else if (indexPath.row == 6) {
+            
+            NSURL *url = [NSURL URLWithString:@"http://alhisba.com/download/"];
+            
+            NSMutableArray *activityItems = [NSMutableArray arrayWithObjects: url, nil];
+            
+            UIActivityViewController *activityViewController = [[UIActivityViewController alloc]initWithActivityItems:activityItems applicationActivities:nil];
+            activityViewController.excludedActivityTypes = @[
+                                                             UIActivityTypePrint,
+                                                             UIActivityTypeCopyToPasteboard,
+                                                             UIActivityTypeAssignToContact,
+                                                             UIActivityTypeSaveToCameraRoll,
+                                                             UIActivityTypeAddToReadingList,
+                                                             UIActivityTypeAirDrop];
+            
+            
+            [self presentViewController:activityViewController animated:YES completion:nil];   }
+    }
+    
+   
     
 }
 
 -(void)viewWillAppear:(BOOL)animated{
     
-    imagesArray = [[NSMutableArray alloc]initWithObjects:@"news.png",@"Articles.png",@"About us.png",@"Contact Us.png",@"Privacy Policy.png",@"FAQ.png",@"Terms and Conditions.png",@"Share Alhisba App.png", nil];
+    imagesArray = [[NSMutableArray alloc]initWithObjects:@"news.png",@"About us.png",@"Contact Us.png",@"Privacy Policy.png",@"FAQ.png",@"Terms and Conditions.png",@"Share Alhisba App.png",@"Share Alhisba App.png",@"Articles.png", nil];
     
-    titlesArray = @[Localized(@"News"),Localized(@"Articles"),Localized(@"About Us"),Localized(@"Contact Us"),Localized(@"Privacy Policy"),Localized(@"FAQ"),Localized(@"Terms and Conditions"),Localized(@"Share Alhisba App")];
+    titlesArray = @[Localized(@"News/Articles"),Localized(@"About Us"),Localized(@"Contact Us"),Localized(@"Privacy Policy"),Localized(@"FAQ"),Localized(@"Terms and conditions"),Localized(@"Rate the App"),Localized(@"Language")];
     
     _tableviewHeight.constant = titlesArray.count * 50;
     
@@ -206,6 +676,7 @@
         _afterLoginView.hidden = NO;
         _logoImage.hidden = YES;
         _userName.hidden = NO;
+        _dollarIcon.hidden = NO;
         _emailId.hidden = NO;
         
        // [self showHUD:@""];
@@ -223,25 +694,25 @@
             _userName.hidden = NO;
             _afterLoginView.hidden = NO;
             _userName.hidden = NO;
+             _dollarIcon.hidden = NO;
             _emailId.hidden = NO;
         }
         
         
         if ([[Utils getLanguage] isEqualToString:KEY_LANGUAGE_AR]) {
 
-            _mainViewtailingConstraint.constant = 16;
+//            _mainViewtailingConstraint.constant = 16;
             _imageCenterConstraint.constant = 30;
 
         }
         else{
-            
-            _mainViewtailingConstraint.constant = -16;
+
+//            _mainViewtailingConstraint.constant = -16;
             _imageCenterConstraint.constant = -30;
 
         }
         
         
-
         [self gradientLayer];
         [_logOutBtn setTitle:Localized(@"Log Out") forState:UIControlStateNormal];
         
@@ -252,12 +723,12 @@
 //
 //        _emailId.text = [[NSUserDefaults standardUserDefaults] valueForKey:@"Email"];
         
+        imagesArray = [[NSMutableArray alloc]initWithObjects:@"news.png",@"news.png",@"About us.png",@"Contact Us.png",@"Privacy Policy.png",@"FAQ.png",@"Terms and Conditions.png",@"Share Alhisba App.png",@"Share Alhisba App.png",@"Articles.png", nil];
         
-        imagesArray = [[NSMutableArray alloc]initWithObjects:@"news.png",@"Articles.png",@"About us.png",@"Contact Us.png",@"Privacy Policy.png",@"FAQ.png",@"Terms and Conditions.png",@"Share Alhisba App.png", nil];
-        
-        titlesArray = @[Localized(@"News"),Localized(@"Articles"),Localized(@"About Us"),Localized(@"Contact Us"),Localized(@"Privacy Policy"),Localized(@"FAQ"),Localized(@"Terms and Conditions"),Localized(@"Share Alhisba App")];
+        titlesArray = @[Localized(@"My Account"),Localized(@"News/Articles"),Localized(@"About Us"),Localized(@"Contact Us"),Localized(@"Privacy Policy"),Localized(@"FAQ"),Localized(@"Terms and conditions"),Localized(@"Share Alhisba App"),Localized(@"Rate the App"),Localized(@"Language")];
 
-        
+        _tableviewHeight.constant = titlesArray.count * 50;
+
     }else{
         
         _loginBtn.hidden = NO;
@@ -269,6 +740,7 @@
         _logoImage.hidden = NO;
         
         _userName.hidden = YES;
+         _dollarIcon.hidden = YES;
         _emailId.hidden = YES;
 
         [self gradientLayer];
@@ -280,11 +752,13 @@
         self.navigationController.navigationBar.translucent = YES;
         self.navigationController.view.backgroundColor = [UIColor clearColor];
         
-        imagesArray = [[NSMutableArray alloc]initWithObjects:@"news.png",@"Articles.png",@"About us.png",@"Contact Us.png",@"Privacy Policy.png",@"FAQ.png",@"Terms and Conditions.png",@"Share Alhisba App.png", nil];
+        imagesArray = [[NSMutableArray alloc]initWithObjects:@"news.png",@"About us.png",@"Contact Us.png",@"Privacy Policy.png",@"FAQ.png",@"Terms and Conditions.png",@"Share Alhisba App.png",@"Share Alhisba App.png",@"Articles.png", nil];
         
-        titlesArray = @[Localized(@"News"),Localized(@"Articles"),Localized(@"About Us"),Localized(@"Contact Us"),Localized(@"Privacy Policy"),Localized(@"FAQ"),Localized(@"Terms and Conditions"),Localized(@"Share Alhisba App")];
+        titlesArray = @[Localized(@"News/Articles"),Localized(@"About Us"),Localized(@"Contact Us"),Localized(@"Privacy Policy"),Localized(@"FAQ"),Localized(@"Terms and conditions"),Localized(@"Share Alhisba App"),Localized(@"Rate the App"),Localized(@"Language")];
 
-        
+     
+        _tableviewHeight.constant = titlesArray.count * 50;
+
         //        self.revealViewController.rearViewRevealWidth = self.view.frame.size.width-100;
     }
     
@@ -322,7 +796,9 @@
     cell.menuTitle.text = [titlesArray objectAtIndex:indexPath.row];
     cell.menuImage.image = [UIImage imageNamed:[NSString stringWithFormat:@"%@",[imagesArray objectAtIndex:indexPath.row]]];
     
-    [cell.menuTitle setFont:[UIFont fontWithName:@"Cairo-SemiBold" size:18]];
+    [cell.menuTitle setFont:[UIFont fontWithName:@"Cairo-SemiBold" size:17]];
+    
+    [_logOutBtn.titleLabel setFont:[UIFont fontWithName:@"Cairo-SemiBold" size:17]];
 
     return cell;
 }
@@ -399,20 +875,20 @@
 
 -(void)gradientLayer{
     
-    gradient = [CAGradientLayer layer];
-    gradient.frame = _menuTopView.bounds;
-    gradient.startPoint = CGPointZero;
-    gradient.endPoint = CGPointMake(1, 1);
-    gradient.colors = [NSArray arrayWithObjects:(id)[[UIColor colorWithRed:212.0f/255.0f green:175.0f/255.0f blue:42.0f/255.0f alpha:1.0] CGColor],(id)[[UIColor colorWithRed:221.0f/255.0f green:197.0f/255.0f blue:97.0f/255.0f alpha:1.0] CGColor], nil];
-    
-    gradient1 = [CAGradientLayer layer];
-    gradient1.frame = _afterLoginView.bounds;
-    gradient1.startPoint = CGPointZero;
-    gradient1.endPoint = CGPointMake(1, 1);
-    gradient1.colors = [NSArray arrayWithObjects:(id)[[UIColor colorWithRed:212.0f/255.0f green:175.0f/255.0f blue:42.0f/255.0f alpha:1.0] CGColor],(id)[[UIColor colorWithRed:221.0f/255.0f green:197.0f/255.0f blue:97.0f/255.0f alpha:1.0] CGColor], nil];
-    
-    [_menuTopView.layer addSublayer:gradient];
-    [_afterLoginView.layer addSublayer:gradient1];
+//    gradient = [CAGradientLayer layer];
+//    gradient.frame = _menuTopView.bounds;
+//    gradient.startPoint = CGPointZero;
+//    gradient.endPoint = CGPointMake(1, 1);
+//    gradient.colors = [NSArray arrayWithObjects:(id)[[UIColor colorWithRed:212.0f/255.0f green:175.0f/255.0f blue:42.0f/255.0f alpha:1.0] CGColor],(id)[[UIColor colorWithRed:221.0f/255.0f green:197.0f/255.0f blue:97.0f/255.0f alpha:1.0] CGColor], nil];
+//
+//    gradient1 = [CAGradientLayer layer];
+//    gradient1.frame = _afterLoginView.bounds;
+//    gradient1.startPoint = CGPointZero;
+//    gradient1.endPoint = CGPointMake(1, 1);
+//    gradient1.colors = [NSArray arrayWithObjects:(id)[[UIColor colorWithRed:212.0f/255.0f green:175.0f/255.0f blue:42.0f/255.0f alpha:1.0] CGColor],(id)[[UIColor colorWithRed:221.0f/255.0f green:197.0f/255.0f blue:97.0f/255.0f alpha:1.0] CGColor], nil];
+//
+//    [_menuTopView.layer addSublayer:gradient];
+//    [_afterLoginView.layer addSublayer:gradient1];
 }
 
 #pragma mark - SVPROGRESS HUD

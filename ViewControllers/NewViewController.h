@@ -13,5 +13,10 @@
 
 @property (weak, nonatomic) IBOutlet UITableView *newsTableView;
 
+@property (weak, nonatomic) IBOutlet UISegmentedControl *segmentControl;
+
+
+- (IBAction)segmentTouchIns:(id)sender;
+
 
 @end

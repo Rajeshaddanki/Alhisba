@@ -34,6 +34,10 @@
 @property (weak, nonatomic) IBOutlet UILabel *weblinkLbl;
 @property (weak, nonatomic) IBOutlet UILabel *timeLbl;
 @property (weak, nonatomic) IBOutlet UILabel *locationInfoLbl;
+
+@property (weak, nonatomic) IBOutlet UILabel *ourSocialMediaChannelLbl;
+@property (weak, nonatomic) IBOutlet UILabel *writeToUsLbl;
+
 @property (weak, nonatomic) IBOutlet UIView *phoneView;
 
 

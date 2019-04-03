@@ -15,6 +15,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *nesDes;
 
 @property (weak, nonatomic) IBOutlet UIView *totalView;
+@property (weak, nonatomic) IBOutlet UIButton *readMoreBtn;
 
 
 @end

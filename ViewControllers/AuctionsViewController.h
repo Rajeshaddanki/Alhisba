@@ -17,6 +17,12 @@
 @property (weak, nonatomic) IBOutlet UIButton *todayBtn;
 @property (weak, nonatomic) IBOutlet UIButton *historicalBtn;
 @property (weak, nonatomic) IBOutlet UILabel *titleLbl;
+@property (weak, nonatomic) IBOutlet UILabel *mojTitleLbl;
+
+@property (weak, nonatomic) IBOutlet UILabel *underLineLbl;
+
+@property (weak, nonatomic) IBOutlet UIView *coverView;
+
 
 @property (weak, nonatomic) IBOutlet JNExpandableTableView *tradesTableView;
 
@@ -80,6 +86,19 @@
 - (IBAction)historicalBtnTapped:(id)sender;
 - (IBAction)auctionProperttListTapped:(id)sender;
 - (IBAction)propertyListBackBtnTapped:(id)sender;
+
+
+- (IBAction)searchBtnTapped:(id)sender;
+
+@property (weak, nonatomic) IBOutlet UILabel *searchTextLbl;
+@property (weak, nonatomic) IBOutlet UIButton *searchIconBtn;
+@property (weak, nonatomic) IBOutlet UIButton *searchBackBtn;
+@property (weak, nonatomic) IBOutlet UILabel *lineLbl;
+@property (weak, nonatomic) IBOutlet UILabel *mojDateLbl;
+@property (weak, nonatomic) IBOutlet UIButton *clendarBtn;
+
+
+- (IBAction)calendarBtnTapped:(id)sender;
 
 
 @end

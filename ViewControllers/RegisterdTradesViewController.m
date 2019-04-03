@@ -18,6 +18,7 @@
 #import "ActionSheetStringPicker.h"
 #import "SelectAreaViewController.h"
 #import "UIViewController+MJPopupViewController.h"
+
 @interface RegisterdTradesViewController ()<UITextFieldDelegate,PopViewControllerDelegate>{
     UIButton *menuBtn,*backBtn;
     NSMutableArray *resultArray,*searchArray;
@@ -27,7 +28,7 @@
     SWRevealViewController *revealViewController;
     NSIndexPath *selectedCellIndexPath;
     ActionSheetStringPicker *picker;
-    
+    TradesTableViewCell *cell2;
     NSString *pageLoading;
 }
 
@@ -49,19 +50,24 @@
     _advSearchLbl.text = Localized(@"Advanced Search");
     _searchBtn.layer.cornerRadius = 10;
     _searchBtn.clipsToBounds = YES;
+    _clearBtn.layer.cornerRadius = 10;
+    _clearBtn.clipsToBounds = YES;
+
+    _searchByTypeLbl.text = Localized(@"Search by type,date,area,size");
     
     _searchView.layer.cornerRadius = 10;
     _searchView.clipsToBounds = YES;
-
+    
     _searchBackView.hidden = YES;
     _advancedBtn.layer.cornerRadius = 10;
     _advancedBtn.clipsToBounds = YES;
     _advancedBtn.layer.borderColor = [UIColor colorWithRed:211.0f/255.0f green:174.0f/255.0f blue:41.0f/255.0f alpha:1].CGColor;
     [_advancedBtn.titleLabel setTextAlignment:UITextAlignmentCenter];
     
+    [_advancedBtn setTitle:Localized(@"Advanced") forState:UIControlStateNormal];
     
-    [_sizeFromTxtFld setFont:[UIFont fontWithName:@"Cairo-SemiBold" size:16]];
-    [_sizeToTxtFld setFont:[UIFont fontWithName:@"Cairo-SemiBold" size:16]];
+//    [_sizeFromTxtFld setFont:[UIFont fontWithName:@"Cairo-SemiBold" size:16]];
+//    [_sizeToTxtFld setFont:[UIFont fontWithName:@"Cairo-SemiBold" size:16]];
 
     // Do any additional setup after loading the view.
     [[NSUserDefaults standardUserDefaults] setValue:@"" forKey:@"dateString"];
@@ -98,7 +104,7 @@
 
 //    [_searchByTapBtn setTitle:Localized(@"Search by type,date,area") forState:UIControlStateNormal];
     //change
-    [_serachBtLbl setText:Localized(@"Search")];
+    [_serachBtLbl setText:Localized(@"Search By Area")];
     [_searchBtn setTitle:Localized(@"Search") forState:UIControlStateNormal];
     [_dateFromBtn setTitle:Localized(Localized(@"Date From")) forState:UIControlStateNormal];
     [_dateToBtn setTitle:Localized(@"Date To") forState:UIControlStateNormal];
@@ -160,6 +166,10 @@
     _priceMc2Lbl.text = Localized(@"Price M2");
     
    
+     [_clearBtn.titleLabel setTextAlignment:NSTextAlignmentCenter];
+    [_searchBtn.titleLabel setTextAlignment:NSTextAlignmentCenter];
+
+    [_clearBtn setTitle:Localized(@"Clear") forState:UIControlStateNormal];
     
     [_areaLbl setTextAlignment:NSTextAlignmentCenter];
     [_sizeLbl setTextAlignment:NSTextAlignmentCenter];
@@ -228,6 +238,7 @@
         
 //                self.searchBtn.imageEdgeInsets = UIEdgeInsetsMake(0, 0, 0, self.view.frame.origin.x);
         
+        
 }
     
     if ([[Utils getLanguage] isEqualToString:KEY_LANGUAGE_AR])
@@ -282,15 +293,71 @@
     _searchViewHeight.constant = 0;
     _searchView.hidden = YES;
     _viewTopConstraint.constant = 80;
+    
+    [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"btng.png"] forBarMetrics:UIBarMetricsDefault];
+
 
     [self showHUD:@""];
     resultArray = [[NSMutableArray alloc] init];
     [self makePostCallForPage:REGISTERD_TRADES withParams:@{@"start":[NSString stringWithFormat:@"%ld",(long)pagesNumber],@"end":@"100",@"date_from":@"",@"date_to":@"",@"block":@"",@"prop_type":@"",@"prop_desc":@"",@"size_from":@"",@"size_to":@"",@"area":@""} withRequestCode:1];
     
+//    CAGradientLayer *gradient = [CAGradientLayer layer];
+//    gradient.frame = self.navigationController.navigationBar.bounds;
+//    gradient.colors = [NSArray arrayWithObjects:(id)[[UIColor colorWithRed:16.0f/255.0f green:35.0f/255.0f blue:71.0f/255.0f alpha:1] CGColor], (id)[[UIColor colorWithRed:31.0f/255.0f green:71.0f/255.0f blue:147.0f/255.0f alpha:1] CGColor], nil];
+//    [self.navigationController.navigationBar setBackgroundImage:[self imageFromLayer:gradient] forBarMetrics:UIBarMetricsDefault];
+    
+    CAGradientLayer *gradientLayer = [CAGradientLayer layer];
+    gradientLayer.frame = self.navigationController.navigationBar.bounds;
+    
+    CGRect gradientFrame = self.navigationController.navigationBar.bounds;
+    gradientFrame.size.height += [UIApplication sharedApplication].statusBarFrame.size.height;
+    gradientLayer.frame = gradientFrame;
+    
+    gradientLayer.colors = @[ (__bridge id)[UIColor colorWithRed:16.0f/255.0f green:35.0f/255.0f blue:71.0f/255.0f alpha:1].CGColor,
+                              (__bridge id)[UIColor colorWithRed:31.0f/255.0f green:71.0f/255.0f blue:147.0f/255.0f alpha:1].CGColor ];
+//    gradientLayer.startPoint = CGPointMake(1.0, 0);
+//    gradientLayer.endPoint = CGPointMake(1.0, 0.5);
+    
+    UIGraphicsBeginImageContext(gradientLayer.bounds.size);
+    [gradientLayer renderInContext:UIGraphicsGetCurrentContext()];
+    UIImage *gradientImage1 = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+
+    [self.navigationController.navigationBar setBackgroundImage:gradientImage1 forBarMetrics:UIBarMetricsDefault];
     
     
+    CAGradientLayer *gradientLayer1 = [CAGradientLayer layer];
+    gradientLayer1.frame = self.gradientImageV.bounds;
     
+    CGRect gradientFrame1 = self.gradientImageV.bounds;
+    gradientFrame1.size.height += [UIApplication sharedApplication].statusBarFrame.size.height;
+    gradientLayer1.frame = gradientFrame1;
+    
+    gradientLayer1.colors = @[ (__bridge id)[UIColor colorWithRed:16.0f/255.0f green:35.0f/255.0f blue:71.0f/255.0f alpha:1].CGColor,
+                              (__bridge id)[UIColor colorWithRed:31.0f/255.0f green:71.0f/255.0f blue:147.0f/255.0f alpha:1].CGColor ];
+    //    gradientLayer.startPoint = CGPointMake(1.0, 0);
+    //    gradientLayer.endPoint = CGPointMake(1.0, 0.5);
+    
+    UIGraphicsBeginImageContext(gradientLayer1.bounds.size);
+    [gradientLayer1 renderInContext:UIGraphicsGetCurrentContext()];
+    UIImage *gradientImage2 = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    [self.gradientImageV setImage:gradientImage2];
 }
+
+- (UIImage *)imageFromLayer:(CALayer *)layer
+{
+    UIGraphicsBeginImageContext([layer frame].size);
+    
+    [layer renderInContext:UIGraphicsGetCurrentContext()];
+    UIImage *outputImage = UIGraphicsGetImageFromCurrentImageContext();
+    
+    UIGraphicsEndImageContext();
+    
+    return outputImage;
+}
+
 -(void)clickForInfo:(id)sender{
     
     [self showInfo:Localized(@"info_register_trades") :sender];
@@ -854,7 +921,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath{
         
         if ([indexPath isEqual:self.tradesTableView.expandedContentIndexPath])
         {
-            return 140.0f;
+            return 160.0f;
         }
         else
             return 68.0f;
@@ -870,19 +937,85 @@ forRowAtIndexPath:(NSIndexPath *)indexPath{
 }
 
 #pragma mark JNExpandableTableView DataSource
-
 - (BOOL)tableView:(JNExpandableTableView *)tableView canExpand:(NSIndexPath *)indexPath
 {
+    
+    //    TradesTableViewCell *cell = [self.tradesTableView cellForRowAtIndexPath:indexPath];
+    //    if ([tableArray containsObject:[NSString stringWithFormat:@"%li",(long)indexPath.row]])
+    //    {
+    //        [cell.expandBtn setImage:[UIImage imageNamed:@"expandP.png"] forState:UIControlStateNormal];
+    //
+    //        [tableArray removeObject:[NSString stringWithFormat:@"%li",(long)indexPath.row]];
+    //    }
+    //    else
+    //    {
+    //        [cell.expandBtn setImage:[UIImage imageNamed:@"expandM.png"] forState:UIControlStateNormal];
+    //
+    //        [tableArray addObject:[NSString stringWithFormat:@"%li",(long)indexPath.row]];
+    //    }
+    
+    UITableViewCell *cell = [self.tradesTableView cellForRowAtIndexPath:indexPath];
+    cell2 = cell;
+    
+    if (![self.tradesTableView.expandedContentIndexPath isEqual:indexPath])
+    {
+        UITableViewCell *cell = [self.tradesTableView cellForRowAtIndexPath:indexPath];
+        if ([cell isKindOfClass:[TradesTableViewCell class]]) {
+            //do specific code
+            //            TradesTableViewCell *cell2 = cell;
+            [cell2.expandBtn setImage:[UIImage imageNamed:@"expandM.png"] forState:UIControlStateNormal];
+        }else{
+            //            TradesTableViewCell *cell2 = [self.tradesTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:self.tradesTableView.expandedContentIndexPath.row-1 inSection:indexPath.section]];
+            [cell2.expandBtn setImage:[UIImage imageNamed:@"expandM.png"] forState:UIControlStateNormal];
+        }
+    }
+    
     return YES;
 }
 - (void)tableView:(JNExpandableTableView *)tableView willExpand:(NSIndexPath *)indexPath
 {
-
-    NSLog(@"Will Expand: %@",indexPath);
+    
+   // Expand = YES;
+    
+    NSLog(@"Will Expand: %ld",(long)indexPath.row);
+    
+    UITableViewCell *cell = [self.tradesTableView cellForRowAtIndexPath:indexPath];
+    
+    if (![self.tradesTableView.expandedContentIndexPath isEqual:indexPath])
+    {
+        UITableViewCell *cell = [self.tradesTableView cellForRowAtIndexPath:indexPath];
+        if ([cell isKindOfClass:[TradesTableViewCell class]]) {
+            //do specific code
+            TradesTableViewCell *cell2 = cell;
+            [cell2.expandBtn setImage:[UIImage imageNamed:@"expandM.png"] forState:UIControlStateNormal];
+            
+        }else{
+            //            TradesTableViewCell *cell2 = [self.tradesTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:self.tradesTableView.expandedContentIndexPath.row-1 inSection:indexPath.section]];
+            //            [cell2.expandBtn setImage:[UIImage imageNamed:@"expandM.png"] forState:UIControlStateNormal];
+        }
+    }
+    
 }
 - (void)tableView:(JNExpandableTableView *)tableView willCollapse:(NSIndexPath *)indexPath
 {
-    NSLog(@"Will Collapse: %@",indexPath);
+    //Expand = NO;
+    
+    NSLog(@"Will Collapse: %ld",(long)indexPath.row);
+    
+    TradesTableViewCell *cell = [self.tradesTableView cellForRowAtIndexPath:indexPath];
+    
+    if (![self.tradesTableView.expandedContentIndexPath isEqual:indexPath])
+    {
+        //        TradesTableViewCell *cell = [self.tradesTableView cellForRowAtIndexPath:indexPath];
+        [cell.expandBtn setImage:[UIImage imageNamed:@"expandP.png"] forState:UIControlStateNormal];
+        
+    }
+    else{
+        //        TradesTableViewCell *cell = [self.tradesTableView cellForRowAtIndexPath:indexPath];
+        [cell.expandBtn setImage:[UIImage imageNamed:@"expandP.png"] forState:UIControlStateNormal];
+    }
+    
+    
 }
 
 #pragma mark - SVPROGRESS HUD
@@ -953,9 +1086,10 @@ forRowAtIndexPath:(NSIndexPath *)indexPath{
 
 - (IBAction)searchBytypeBtnTapped:(id)sender {
 
-    _searchViewHeight.constant = 500;
-    _searchView.hidden = NO;
-    _searchBackView.hidden = NO;
+//    _searchViewHeight.constant = 500;
+//    _searchView.hidden = NO;
+//    _searchBackView.hidden = NO;
+    
     
 //    _viewTopConstraint.constant = 8;
 //    _searchView.hidden = NO;
@@ -970,6 +1104,39 @@ forRowAtIndexPath:(NSIndexPath *)indexPath{
     ////adv
 //    _advView.hidden= YES;
 //    _advHeight.constant=0;
+    
+    
+    [self showHUD:@""];
+    
+    filterStr = @"Area";
+
+    searchArray = [[NSMutableArray alloc]init];
+    
+    [_sizeToTxtFld resignFirstResponder];
+    [_sizeFromTxtFld resignFirstResponder];
+    SelectAreaViewController *vc = [[SelectAreaViewController alloc] initWithNibName:@"SelectAreaViewController" bundle:nil];
+    vc.delegate=self;
+    vc.from = @"register";
+    //    [self.navigationController pushViewController:vc animated:YES];
+    vc.completionBlock2 = ^(NSString *area) {
+        NSLog(@"%@",area);
+        //        snationality= area;
+        [_areaBtn setTitle:area forState:UIControlStateNormal];
+        areaStr = [NSString stringWithFormat:@"%@",area];
+        
+        self.serachBtLbl.text = areaStr;
+        
+        [self showHUD:@""];
+        
+        
+        [resultArray removeAllObjects];
+        
+        [self makePostCallForPage:REGISTERD_TRADES withParams:@{@"start":[NSString stringWithFormat:@"%ld",(long)self->pagesNumber],@"end":@"100",@"date_from":@"",@"date_to":@"",@"block":@"",@"prop_type":@"",@"prop_desc":@"",@"size_from":@"",@"size_to":@"",@"area":self.serachBtLbl.text} withRequestCode:1];
+    };
+    
+    [self presentPopupViewController:vc animationType:MJPopupViewAnimationSlideBottomTop dismissed:nil];
+    
+    [self hideHUD];
 }
 
 - (IBAction)dateFromBtnTapped:(id)sender {
@@ -1121,10 +1288,6 @@ forRowAtIndexPath:(NSIndexPath *)indexPath{
         
     }
     
-  //  [self showHUD:@""];
-//    resultArray = [[NSMutableArray alloc] init];
-//    [self makePostCallForPage:REGISTERD_TRADES withParams:@{@"start":[NSString stringWithFormat:@"%ld",(long)pagesNumber],@"end":@"100",@"date_from":@"",@"date_to":@"",@"block":@"",@"prop_type":@"",@"prop_desc":@"",@"size_from":@"",@"size_to":@"",@"area":@""} withRequestCode:1];
-
 }
 
 -(BOOL)textFieldShouldReturn:(UITextField *)textField
@@ -1152,5 +1315,16 @@ forRowAtIndexPath:(NSIndexPath *)indexPath{
     _searchView.hidden = NO;
     _searchBackView.hidden = NO;
     
+}
+- (IBAction)clearBtnTapped:(id)sender {
+    
+    [_dateFromBtn setTitle:Localized(@"Date From") forState:UIControlStateNormal];
+    [_dateToBtn setTitle:Localized(@"Date To") forState:UIControlStateNormal];
+    [_areaBtn setTitle:Localized(@"Area") forState:UIControlStateNormal];
+    [_propertyBtn setTitle:Localized(@"Property Type") forState:UIControlStateNormal];
+    [_blockBtn setTitle:Localized(@"Block") forState:UIControlStateNormal];
+    [_descriptionBtn setTitle:Localized(@"Description") forState:UIControlStateNormal];
+    _sizeToTxtFld.placeholder = Localized(@"Size To");
+    _sizeFromTxtFld.placeholder = Localized(@"Size From");
 }
 @end

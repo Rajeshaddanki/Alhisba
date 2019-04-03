@@ -22,6 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (weak, nonatomic) IBOutlet UITableView *auctionTableView;
 
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *auctionTableHeight;
+@property (weak, nonatomic) IBOutlet UILabel *organizerTelephoneNo;
 
 // Auction List ...
 
@@ -49,6 +50,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (weak, nonatomic) IBOutlet UILabel *additionalInfoLbl;
 @property (weak, nonatomic) IBOutlet UILabel *additionalnfoValue;
 
+@property (strong, nonatomic)NSString *fromProp;
 
 @property (weak, nonatomic) IBOutlet JNExpandableTableView *tradesTableView;
 @property (weak, nonatomic) IBOutlet UIView *backGroundView;
@@ -63,6 +65,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (strong , nonatomic)NSMutableArray *popUpList1;
 
+@property (weak, nonatomic) IBOutlet UIImageView *auctionImage1;
 
 @property (weak, nonatomic) IBOutlet UIImageView *auctionImageView;
 

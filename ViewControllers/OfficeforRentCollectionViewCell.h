@@ -15,6 +15,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (weak, nonatomic) IBOutlet UIImageView *salesImage;
 @property (weak, nonatomic) IBOutlet UILabel *landlbl;
 @property (weak, nonatomic) IBOutlet UILabel *landInfo;
+@property (weak, nonatomic) IBOutlet UIView *areaTitleBackView;
+
 
 @end
 

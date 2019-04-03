@@ -18,6 +18,9 @@
 @property (weak, nonatomic) IBOutlet UILabel *sizePrice;
 @property (weak, nonatomic) IBOutlet UILabel *plotValue;
 
+//@property (weak, nonatomic) IBOutlet UIButton *expandBtn;
+
+
 @property (weak, nonatomic) IBOutlet UITextView *questionLbl;
 
 @property (weak, nonatomic) IBOutlet UIView *colorChangeView;
@@ -26,6 +29,7 @@
 
 @property (weak, nonatomic) IBOutlet UILabel *auctionLbl;
 @property (weak, nonatomic) IBOutlet UILabel *auctionTitle;
+@property (weak, nonatomic) IBOutlet UIButton *expandBtn;
 
 
 @property (weak, nonatomic) IBOutlet UIButton *dropDownBtn;

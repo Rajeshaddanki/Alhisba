@@ -36,6 +36,8 @@
 @property (weak, nonatomic) IBOutlet UIButton *blockBtn;
 @property (weak, nonatomic) IBOutlet UIButton *descriptionBtn;
 
+@property (weak, nonatomic) IBOutlet UILabel *searchByTypeLbl;
+
 
 // Labels...
 @property (weak, nonatomic) IBOutlet UILabel *areaLbl;
@@ -67,7 +69,14 @@
 @property (weak, nonatomic) IBOutlet UIImageView *advsearchImage;
 @property (weak, nonatomic) IBOutlet UIButton *advancedBtn;
 
+@property (weak, nonatomic) IBOutlet UIButton *clearBtn;
 
 @property (weak, nonatomic) IBOutlet UIView *searchBackView;
+
+- (IBAction)clearBtnTapped:(id)sender;
+
+
+@property (weak, nonatomic) IBOutlet UIImageView *gradientImageV;
+
 
 @end

@@ -19,12 +19,14 @@
 @property (weak, nonatomic) IBOutlet UIButton *forgotBtn;
 @property (weak, nonatomic) IBOutlet UIButton *mainLoginBtn;
 
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *loginLoginCenterContraint;
 
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *loginCenterConstraint;
 
 @property (weak, nonatomic) IBOutlet UITextField *emailAddressFld;
 @property (weak, nonatomic) IBOutlet UITextField *passwordFld;
 
-
+@property (strong, nonatomic)NSString *fromPostAdd;
 
 
 @property (strong, nonatomic)NSString *fromOfficial;

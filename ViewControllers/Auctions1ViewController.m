@@ -13,6 +13,8 @@
 #import <GoogleAnalytics/GAI.h>
 #import <GoogleAnalytics/GAIDictionaryBuilder.h>
 #import <GoogleAnalytics/GAIFields.h>
+#import "UIImageView+UIActivityIndicatorForSDWebImage.h"
+
 
 
 @interface Auctions1ViewController (){
@@ -49,7 +51,6 @@
     _propertyDescLbl.textAlignment = NSTextAlignmentCenter;
     _propertyDescValue.textAlignment = NSTextAlignmentCenter;
     _additionalInfoLbl.textAlignment = NSTextAlignmentCenter;
-    _additionalnfoValue.textAlignment = NSTextAlignmentCenter;
   //  self.navigationItem.title = Localized(@"Auctions");
     self.navigationController.navigationBar.titleTextAttributes = [NSDictionary dictionaryWithObjectsAndKeys:[UIColor whiteColor],NSForegroundColorAttributeName,[UIFont fontWithName:@"DroidSans-Bold" size:20.0],NSFontAttributeName,nil];
     
@@ -85,6 +86,8 @@
         self.navigationItem.leftBarButtonItem = backBarButtonItem1;
         
         _propertyAreaValue.textAlignment = NSTextAlignmentLeft;
+        _additionalnfoValue.textAlignment = NSTextAlignmentLeft;
+
 
     }
     else{
@@ -96,7 +99,8 @@
         UIBarButtonItem *backBarButtonItem1 = [[UIBarButtonItem alloc] initWithCustomView:backBtn];
         self.navigationItem.leftBarButtonItem = backBarButtonItem1;
         
-        _propertyAreaValue.textAlignment = NSTextAlignmentLeft;
+        _propertyAreaValue.textAlignment = NSTextAlignmentRight;
+         _additionalnfoValue.textAlignment = NSTextAlignmentRight;
     }
 
     _auctionsView.layer.cornerRadius = 15.0f;
@@ -165,6 +169,38 @@
     [btn addTarget:self action:@selector(clickForInfo:) forControlEvents:UIControlEventTouchUpInside];
     [newView addSubview:btn];
     self.navigationItem.titleView = newView;
+ 
+    CAGradientLayer *gradientLayer = [CAGradientLayer layer];
+    gradientLayer.frame = self.navigationController.navigationBar.bounds;
+    
+    CGRect gradientFrame = self.navigationController.navigationBar.bounds;
+    gradientFrame.size.height += [UIApplication sharedApplication].statusBarFrame.size.height;
+    gradientLayer.frame = gradientFrame;
+    
+    gradientLayer.colors = @[ (__bridge id)[UIColor colorWithRed:16.0f/255.0f green:35.0f/255.0f blue:71.0f/255.0f alpha:1].CGColor,
+                              (__bridge id)[UIColor colorWithRed:31.0f/255.0f green:71.0f/255.0f blue:147.0f/255.0f alpha:1].CGColor ];
+    //    gradientLayer.startPoint = CGPointMake(1.0, 0);
+    //    gradientLayer.endPoint = CGPointMake(1.0, 0.5);
+    
+    UIGraphicsBeginImageContext(gradientLayer.bounds.size);
+    [gradientLayer renderInContext:UIGraphicsGetCurrentContext()];
+    UIImage *gradientImage1 = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    [self.navigationController.navigationBar setBackgroundImage:gradientImage1 forBarMetrics:UIBarMetricsDefault];
+    
+}
+
+- (UIImage *)imageFromLayer:(CALayer *)layer
+{
+    UIGraphicsBeginImageContext([layer frame].size);
+    
+    [layer renderInContext:UIGraphicsGetCurrentContext()];
+    UIImage *outputImage = UIGraphicsGetImageFromCurrentImageContext();
+    
+    UIGraphicsEndImageContext();
+    
+    return outputImage;
 }
 
 -(void)clickForInfo:(id)sender{
@@ -213,6 +249,11 @@
     if ([[Utils getLanguage] isEqualToString:KEY_LANGUAGE_AR]) {
         
         _auctionOrganizerValue.text = [[_auctionList valueForKey:@"organiser"] valueForKey:@"organiser_name_arabic"];
+      
+        _organizerTelephoneNo.text = [[_auctionList valueForKey:@"organiser"] valueForKey:@"organiser_phone"];
+        
+        NSLog(@"Organizes Values %@",[_auctionList valueForKey:@"organiser"]);
+        
         _dateValue.text = [_auctionList valueForKey:@"event_date"];
         _venueValu.text = [_auctionList valueForKey:@"venue_arabic"];
         _propertyTypeValue.text = [[_auctionList valueForKey:@"properties"][0] valueForKey:@"value_arabic"];
@@ -226,6 +267,35 @@
                 str = [NSString stringWithFormat:@"%@,%@",str,[[arr objectAtIndex:i] valueForKey:@"value_arabic"]];
             }
         }
+        
+        
+        if ([_fromProp isEqualToString:@"fromPop"]) {
+            
+           
+            [_auctionImageView setImageWithURL:[[NSUserDefaults standardUserDefaults]valueForKey:@"popImage"] usingActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+            
+            [_auctionImage1 setImageWithURL:[[NSUserDefaults standardUserDefaults]valueForKey:@"popImage"] usingActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+            
+        }
+        else{
+            
+            [_auctionImageView setImageWithURL:[_auctionList valueForKey:@"image"] usingActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+            
+            [_auctionImage1 setImageWithURL:[_auctionList valueForKey:@"image"] usingActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+
+            
+        }
+        
+       
+        
+        _auctionImageView.layer.cornerRadius = 10.0f;
+        _auctionImageView.layer.masksToBounds = YES;
+        
+        _auctionImage1.layer.cornerRadius = 10.0f;
+        _auctionImage1.layer.masksToBounds = YES;
+        
+        NSLog(@"Auctions Image %@",[_auctionList valueForKey:@"image"]);
+
         _propertyAreaValue.text = str;
         _propertListedValue.text = [_auctionList valueForKey:@"num_properties_listed"];
         _propertySoldValue.text = [_auctionList valueForKey:@"num_properties_sold"];
@@ -237,11 +307,34 @@
     else{
         _auctionOrganizerValue.text = [[_auctionList valueForKey:@"organiser"] valueForKey:@"organiser_name_english"];
         
+        _organizerTelephoneNo.text = [[_auctionList valueForKey:@"organiser"] valueForKey:@"organiser_phone"];
         
-//        [_auctionImageView setImageWithURL:[dic valueForKey:@"image"] usingActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+        NSLog(@"Organizes Values %@",[_auctionList valueForKey:@"image"]);
 
+        
+        if ([_fromProp isEqualToString:@"fromPop"]) {
+            
+            
+            [_auctionImageView setImageWithURL:[[NSUserDefaults standardUserDefaults]valueForKey:@"popImage"] usingActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+            
+            [_auctionImage1 setImageWithURL:[[NSUserDefaults standardUserDefaults]valueForKey:@"popImage"] usingActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+        }
+        else{
+            
+            [_auctionImageView setImageWithURL:[_auctionList valueForKey:@"image"] usingActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+            
+            [_auctionImage1 setImageWithURL:[_auctionList valueForKey:@"image"] usingActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+            
+            
+        }
+
+        NSLog(@"Auctions Image %@",[_auctionList valueForKey:@"image"]);
+        
         _auctionImageView.layer.cornerRadius = 10.0f;
         _auctionImageView.layer.masksToBounds = YES;
+        
+        _auctionImage1.layer.cornerRadius = 10.0f;
+        _auctionImage1.layer.masksToBounds = YES;
         
         _dateValue.text = [_auctionList valueForKey:@"event_date"];
         _venueValu.text = [_auctionList valueForKey:@"venue_english"];

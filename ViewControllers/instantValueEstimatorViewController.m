@@ -27,8 +27,9 @@
 #import <GoogleAnalytics/GAIDictionaryBuilder.h>
 #import <GoogleAnalytics/GAIFields.h>
 #import "PopViewControllerDelegate.h"
+#import "GroupsViewController.h"
 
-@interface instantValueEstimatorViewController ()<UIDocumentInteractionControllerDelegate,PopViewControllerDelegate>{
+@interface instantValueEstimatorViewController ()<UIDocumentInteractionControllerDelegate,PopViewControllerDelegate,UITextFieldDelegate>{
     
     UIButton *menuBtn,*backBtn;
     NSMutableArray *locationArray,*locationSpecArray,*plotSpecArray,*facingArray,*resultArray,*crubCheckingArray,*seafacingArray;
@@ -97,11 +98,11 @@
 //    _advancedBtn.layer.cornerRadius=5;
 //    _advancedBtn.clipsToBounds=YES;
     
-    self.navigationController.navigationBar.barTintColor = [UIColor colorWithRed:19.0f/255.0f green:40.0f/255.0f blue:83.0f/255.0f alpha:1.0f];
+   // self.navigationController.navigationBar.barTintColor = [UIColor colorWithRed:19.0f/255.0f green:40.0f/255.0f blue:83.0f/255.0f alpha:1.0f];
     
     // barTintColor sets the background color
     
-    self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
+   // self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
     // tintColor sets the buttons color of the navigation bar
     
     self.navigationController.navigationBar.translucent = NO;
@@ -121,6 +122,8 @@
     [_calculateBtn setTitle:Localized(@"Calculate") forState:UIControlStateNormal];
     _directioNLbl.text = Localized(@"Direction");
     _curbLbl.text = Localized(@"Curb");
+    
+    [_knowYourQualityBtn setTitle:Localized(@"Know Your Quality") forState:UIControlStateNormal];
     
     table = [NSMutableArray array];
     filterContainStringad = [NSMutableArray array];
@@ -221,8 +224,32 @@
     [_previewPopUp.layer setBorderColor:[UIColor colorWithRed:247.0f/255.0f green:189.0f/255.0f blue:95.0f/255.0f alpha:1.0f].CGColor];
     [_previewPopUp.layer setMasksToBounds:YES];
     
+    [_knowYourQualityBtn.layer setCornerRadius:5.0f];
+    [_knowYourQualityBtn.layer setMasksToBounds:YES];
+    
     [self textFldBoarders];
     [self paddingFlds];
+    
+    _selectAreaFld.delegate = self;
+    _selectLandSize.delegate = self;
+    _selectStreet.delegate = self;
+    _selectLocationFld.delegate = self;
+    _buildingAgeFl.delegate = self;
+    _finishingQualityFld.delegate = self;
+    _basementFld.delegate = self;
+    _noOfFloorsFld.delegate = self;
+    
+     [self shadow:_selectAreaFld];
+     [self shadow:_selectLandSize];
+     [self shadow:_selectStreet];
+     [self shadow:_selectLocationFld];
+     [self shadow:_finishingQualityFld];
+     [self shadow:_basementFld];
+     [self shadow:_noOfFloorsFld];
+     [self shadow:_selectdirectionFld];
+     [self shadow:_selectCurbFLd];
+
+
     
 //    if ([_fromMenu isEqualToString:@"fromMenu"]) {
 //
@@ -332,6 +359,40 @@
 //    [newView addSubview:btn];
 //    self.navigationItem.titleView = newView;
     
+    [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"btng.png"] forBarMetrics:UIBarMetricsDefault];
+
+    
+    CAGradientLayer *gradientLayer = [CAGradientLayer layer];
+    gradientLayer.frame = self.navigationController.navigationBar.bounds;
+    
+    CGRect gradientFrame = self.navigationController.navigationBar.bounds;
+    gradientFrame.size.height += [UIApplication sharedApplication].statusBarFrame.size.height;
+    gradientLayer.frame = gradientFrame;
+    
+    gradientLayer.colors = @[ (__bridge id)[UIColor colorWithRed:16.0f/255.0f green:35.0f/255.0f blue:71.0f/255.0f alpha:1].CGColor,
+                              (__bridge id)[UIColor colorWithRed:31.0f/255.0f green:71.0f/255.0f blue:147.0f/255.0f alpha:1].CGColor ];
+    //    gradientLayer.startPoint = CGPointMake(1.0, 0);
+    //    gradientLayer.endPoint = CGPointMake(1.0, 0.5);
+    
+    UIGraphicsBeginImageContext(gradientLayer.bounds.size);
+    [gradientLayer renderInContext:UIGraphicsGetCurrentContext()];
+    UIImage *gradientImage1 = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    [self.navigationController.navigationBar setBackgroundImage:gradientImage1 forBarMetrics:UIBarMetricsDefault];
+   
+}
+
+- (UIImage *)imageFromLayer:(CALayer *)layer
+{
+    UIGraphicsBeginImageContext([layer frame].size);
+    
+    [layer renderInContext:UIGraphicsGetCurrentContext()];
+    UIImage *outputImage = UIGraphicsGetImageFromCurrentImageContext();
+    
+    UIGraphicsEndImageContext();
+    
+    return outputImage;
 }
 -(void)clickForInfo:(id)sender{
     
@@ -1866,11 +1927,26 @@ cell1.checkBoxBtn.layer.backgroundColor = [UIColor colorWithRed:211.0f/255.0f gr
     SelectAreaViewController *vc = [[SelectAreaViewController alloc] initWithNibName:@"SelectAreaViewController" bundle:nil];
     vc.delegate=self;
     //    [self.navigationController pushViewController:vc animated:YES];
-    vc.completionBlock = ^(NSMutableDictionary *area) {
+     vc.completionBlock2 = ^(NSString *area) {
         NSLog(@"%@",area);
 //        snationality= area;
-        areaId =[area valueForKey:@"id"];
-        self.selectAreaFld.text = [[Utils getLanguage] isEqualToString:KEY_LANGUAGE_AR]?[area valueForKey:@"value_arabic"]:[area valueForKey:@"value_english"];
+         
+        areaId = [[NSUserDefaults standardUserDefaults]valueForKey:@"auctAreaid"];
+         
+        self.selectAreaFld.text = [NSString stringWithFormat:@"%@",area];
+        
+        if ([_selectAreaFld.text isEqualToString:@""] || [_selectLocationFld.text isEqualToString:@""] || [_selectLandSize.text isEqualToString:@""] || [_selectStreet.text isEqualToString:@""]) {
+            
+            [_calculateBtn setBackgroundColor:[UIColor lightGrayColor]];
+            
+        }
+        else{
+            
+            [_calculateBtn setBackgroundColor:[UIColor colorWithRed:212.0f/255.0f green:175.0f/255.0f blue:42.0f/255.0f alpha:1.0f]];
+        }
+        
+     //   self.selectAreaFld.backgroundColor = [UIColor colorWithRed:212.0f/255.0f green:175.0f/255.0f blue:42.0f/255.0f alpha:1.0f];
+        
         [self makePostCallForPage:LIVE_VALUES withParams:@{@"area_id":areaId} withRequestCode:100];
     };
     
@@ -1902,6 +1978,16 @@ cell1.checkBoxBtn.layer.backgroundColor = [UIColor colorWithRed:211.0f/255.0f gr
                                                
             landSizeId = [NSString stringWithFormat:@"%@",[sizeIdarray objectAtIndex:selectedIndex]];
                                                
+                                               if ([_selectAreaFld.text isEqualToString:@""] || [_selectLocationFld.text isEqualToString:@""] || [_selectStreet.text isEqualToString:@""] || [_selectLandSize.text isEqualToString:@""]) {
+                                                   
+                                                   [_calculateBtn setBackgroundColor:[UIColor lightGrayColor]];
+                                                   
+                                               }
+                                               else{
+                                                   
+                                                   [_calculateBtn setBackgroundColor:[UIColor colorWithRed:212.0f/255.0f green:175.0f/255.0f blue:42.0f/255.0f alpha:1.0f]];
+                                               }
+                                               
                                            }
                                          cancelBlock:^(ActionSheetStringPicker *picker) {
                                              NSLog(@"Block Picker Canceled");
@@ -1910,7 +1996,6 @@ cell1.checkBoxBtn.layer.backgroundColor = [UIColor colorWithRed:211.0f/255.0f gr
     }
     }
 }
-
 
 - (IBAction)selectStreetBtnTapped:(id)sender {
     
@@ -1939,6 +2024,16 @@ cell1.checkBoxBtn.layer.backgroundColor = [UIColor colorWithRed:211.0f/255.0f gr
                                                _selectStreet.text=[NSString stringWithFormat:@"%@",[streetArray objectAtIndex:selectedIndex]];
                                                
                                                streetId = [NSString stringWithFormat:@"%@",[streetMulti objectAtIndex:selectedIndex]];
+                                               
+                                               if ([_selectAreaFld.text isEqualToString:@""] || [_selectLocationFld.text isEqualToString:@""] || [_selectStreet.text isEqualToString:@""]|| [_selectLandSize.text isEqualToString:@""]) {
+                                                   
+                                                   [_calculateBtn setBackgroundColor:[UIColor lightGrayColor]];
+                                                   
+                                               }
+                                               else{
+                                                   
+                                                   [_calculateBtn setBackgroundColor:[UIColor colorWithRed:212.0f/255.0f green:175.0f/255.0f blue:42.0f/255.0f alpha:1.0f]];
+                                               }
                                                
                                            }
                                          cancelBlock:^(ActionSheetStringPicker *picker) {
@@ -2315,6 +2410,7 @@ cell1.checkBoxBtn.layer.backgroundColor = [UIColor colorWithRed:211.0f/255.0f gr
                                                
                   directiontId = [NSString stringWithFormat:@"%@",[directionMulti objectAtIndex:selectedIndex]];
                                                
+                                               
                                            }
                                          cancelBlock:^(ActionSheetStringPicker *picker) {
                                              NSLog(@"Block Picker Canceled");
@@ -2343,6 +2439,16 @@ cell1.checkBoxBtn.layer.backgroundColor = [UIColor colorWithRed:211.0f/255.0f gr
         curbIdarray = [[[resultArray1 valueForKey:@"crub"] valueForKey:@"crub_values"] valueForKey:@"id"];
         
         curbMulti = [[[resultArray1 valueForKey:@"crub"] valueForKey:@"crub_values"] valueForKey:@"multiplication_factor"];
+        
+        if ([_selectAreaFld.text isEqualToString:@""] || [_selectLocationFld.text isEqualToString:@""] || [_selectStreet.text isEqualToString:@""] || [_selectdirectionFld.text isEqualToString:@""]) {
+            
+            [_calculateBtn setBackgroundColor:[UIColor lightGrayColor]];
+            
+        }
+        else{
+            
+            [_calculateBtn setBackgroundColor:[UIColor colorWithRed:212.0f/255.0f green:175.0f/255.0f blue:42.0f/255.0f alpha:1.0f]];
+        }
         
         
         [ActionSheetStringPicker showPickerWithTitle:Localized(@"Select Curb")
@@ -2393,6 +2499,16 @@ cell1.checkBoxBtn.layer.backgroundColor = [UIColor colorWithRed:211.0f/255.0f gr
                                                _selectLocationFld.text=[NSString stringWithFormat:@"%@",[filedLocationArray objectAtIndex:selectedIndex]];
                                                
                                                filedLocationId = [NSString stringWithFormat:@"%@",[locationMulti objectAtIndex:selectedIndex]];
+                                               
+                                               if ([_selectAreaFld.text isEqualToString:@""] || [_selectLocationFld.text isEqualToString:@""] || [_selectStreet.text isEqualToString:@""] ||[_selectLandSize.text isEqualToString:@""]) {
+                                                   
+                                                   [_calculateBtn setBackgroundColor:[UIColor lightGrayColor]];
+                                                   
+                                               }
+                                               else{
+                                                   
+                                                   [_calculateBtn setBackgroundColor:[UIColor colorWithRed:212.0f/255.0f green:175.0f/255.0f blue:42.0f/255.0f alpha:1.0f]];
+                                               }
                                                
                                            }
                                          cancelBlock:^(ActionSheetStringPicker *picker) {
@@ -3458,6 +3574,7 @@ cell1.checkBoxBtn.layer.backgroundColor = [UIColor colorWithRed:211.0f/255.0f gr
 //            [self showErrorAlertWithMessage:Localized(@"Please Enter Value LessThan 99")];
 //        }
     }
+    
 }
 -(void)paddingFlds{
     
@@ -3611,6 +3728,8 @@ cell1.checkBoxBtn.layer.backgroundColor = [UIColor colorWithRed:211.0f/255.0f gr
     _selectCurbFLd.text = @"";
 
     _selectdirectionFld.text = @"";
+    
+    [_calculateBtn setBackgroundColor:[UIColor lightGrayColor]];
     
    // parseRe = @"parseRe";
     //_selectCurbFLd.textColor = [UIColor clearColor];
@@ -3881,4 +4000,19 @@ cell1.checkBoxBtn.layer.backgroundColor = [UIColor colorWithRed:211.0f/255.0f gr
     btn.layer.shadowPath = shadowPath.CGPath;
 }
 
+
+-(void)shadow:(UITextField*)txtFld{
+    
+    txtFld.layer.cornerRadius = txtFld.frame.size.height/2-15;
+    txtFld.clipsToBounds = false;
+    txtFld.layer.shadowOpacity=0.2;
+    txtFld.layer.shadowColor = [[UIColor blackColor] CGColor];
+    txtFld.layer.shadowOffset =CGSizeMake(0, 2);
+}
+
+- (IBAction)qualityBtnTapped:(id)sender {
+    
+    GroupsViewController *obj = [self.storyboard instantiateViewControllerWithIdentifier:@"GroupsViewController"];
+    [self.navigationController pushViewController:obj animated:YES];
+}
 @end

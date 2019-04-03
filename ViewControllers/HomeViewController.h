@@ -29,7 +29,13 @@ NS_ASSUME_NONNULL_BEGIN
 @property (weak, nonatomic) IBOutlet UILabel *latestNewsLbl;
 @property (weak, nonatomic) IBOutlet UILabel *officeForrentLbl;
 
+@property (weak, nonatomic) IBOutlet UIButton *forwardBtn;
 
+@property (weak, nonatomic) IBOutlet UIButton *backWardBtn;
+
+@property (weak, nonatomic) IBOutlet UIButton *postAddBtn;
+
+- (IBAction)postAddBtnTaped:(id)sender;
 
 // rentCollection
 
@@ -38,6 +44,14 @@ NS_ASSUME_NONNULL_BEGIN
 @property (weak, nonatomic) IBOutlet UIButton *officeforRentBtn;
 @property (weak, nonatomic) IBOutlet UIButton *latestNewsMoreBtn;
 
+@property (weak, nonatomic) IBOutlet UIView *gradientView;
+
+@property (weak, nonatomic) IBOutlet UIImageView *gradientImageV;
+@property (weak, nonatomic) IBOutlet UIImageView *greadientImageV1;
+
+@property (weak, nonatomic) IBOutlet UIButton *sideMenuBtn;
+
+@property (weak, nonatomic) IBOutlet UIView *coverView;
 
 
 // Button Actions...

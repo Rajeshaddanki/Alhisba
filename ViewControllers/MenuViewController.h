@@ -30,6 +30,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *mainViewtailingConstraint;
 
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *imageCenterConstraint;
+@property (weak, nonatomic) IBOutlet UILabel *ourSocialMediaLbl;
+@property (weak, nonatomic) IBOutlet UIImageView *dollarIcon;
+
+
 
 - (IBAction)loginBtnClicked:(id)sender;
 - (IBAction)signUpBtnClicked:(id)sender;

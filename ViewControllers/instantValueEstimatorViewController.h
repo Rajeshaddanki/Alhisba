@@ -236,4 +236,8 @@
 - (IBAction)crubInfobtnAction:(id)sender;
 @property (weak, nonatomic) IBOutlet UIView *advancedBtnbackgroundView;
 
+@property (weak, nonatomic) IBOutlet UIButton *knowYourQualityBtn;
+
+- (IBAction)qualityBtnTapped:(id)sender;
+
 @end

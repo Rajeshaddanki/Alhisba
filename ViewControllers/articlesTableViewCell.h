@@ -17,4 +17,16 @@
 @property (weak, nonatomic) IBOutlet UIView *totalView;
 
 
+// groups outlets
+
+@property (weak, nonatomic) IBOutlet UILabel *questionLbl;
+
+@property (weak, nonatomic) IBOutlet UILabel *answerLbl;
+
+@property (weak, nonatomic) IBOutlet UITextField *questionFld;
+
+@property (weak, nonatomic) IBOutlet UIButton *questionBtnTapped;
+
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *answerLblTopConstraint;
+
 @end

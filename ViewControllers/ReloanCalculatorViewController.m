@@ -46,14 +46,11 @@
     _anualRateFld.delegate = self;
     _slectPaymentModeFld.delegate = self;
     
-//    [self shadow:_enterPropertyValue];
-    [self shadow:_downPaymentFld];
-    [self shadow:_downpaymentPercentageFld];
-    [self shadow:_loanAmountFld];
-    [self shadow:_graceYearsFld];
-    [self shadow:_graceMonthsFld];
-    [self shadow:_anualRateFld];
-    [self shadow:_slectPaymentModeFld];
+    
+    self.label1.layer.shadowColor = [[UIColor redColor] CGColor];
+    self.label1.layer.shadowOffset = CGSizeMake(0.0, 1.0);
+    self.label1.layer.shadowOpacity = 1;
+    self.label1.layer.shadowRadius = 0.0;
     
     _popUpView.hidden = YES;
     _popUpTabelView.hidden = YES;
@@ -115,7 +112,7 @@
     
     self.navigationItem.title = Localized(@"Re Loan calculator");
     
-    self.navigationController.navigationBar.titleTextAttributes = [NSDictionary dictionaryWithObjectsAndKeys:[UIColor whiteColor],NSForegroundColorAttributeName,[UIFont fontWithName:@"DroidSans-Bold" size:20.0],NSFontAttributeName,nil];
+    self.navigationController.navigationBar.titleTextAttributes = [NSDictionary dictionaryWithObjectsAndKeys:[UIColor colorWithRed:212.0f/255.0f green:175.0f/255.0f blue:42.0f/255.0f alpha:1.0f],NSForegroundColorAttributeName,[UIFont fontWithName:@"DroidSans-Bold" size:20.0],NSFontAttributeName,nil];
     
     
 //    UIToolbar *keyboardDoneButtonView = [[UIToolbar alloc] init];
@@ -171,12 +168,12 @@
     amountStr = @"amount";
     [_downPaymentBtn setImage:[UIImage imageNamed:@"radio-on-button.png"] forState:UIControlStateNormal];
 
-    menuBtn = [[UIButton alloc] init];
-    [menuBtn setBackgroundImage:[UIImage imageNamed:@"reload.png"] forState:UIControlStateNormal];
-    menuBtn.frame = CGRectMake(0, 0, 30, 30);
-     [menuBtn addTarget:self action:@selector(reloanBtnTapped) forControlEvents:UIControlEventTouchUpInside];
-    UIBarButtonItem *backBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:menuBtn];
-    self.navigationItem.rightBarButtonItem = backBarButtonItem;
+//    menuBtn = [[UIButton alloc] init];
+//    [menuBtn setBackgroundImage:[UIImage imageNamed:@"reload.png"] forState:UIControlStateNormal];
+//    menuBtn.frame = CGRectMake(0, 0, 30, 30);
+//     [menuBtn addTarget:self action:@selector(reloanBtnTapped) forControlEvents:UIControlEventTouchUpInside];
+//    UIBarButtonItem *backBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:menuBtn];
+//    self.navigationItem.rightBarButtonItem = backBarButtonItem;
     
     if ([[Utils getLanguage] isEqualToString:KEY_LANGUAGE_AR]) {
         backBtn = [[UIButton alloc] init];
@@ -198,11 +195,12 @@
     
     UIColor *color = [UIColor colorWithRed:80.0f/255.0f green:99.0f/255.0f blue:139.0f/255.0f alpha:1.0f];
     
+    UIColor *color1 = [UIColor whiteColor];
+
     _enterPropertyValue.attributedPlaceholder = [[NSAttributedString alloc] initWithString:Localized(@"Enter Property Value in KD") attributes:@{NSForegroundColorAttributeName: color}];
     _downPaymentFld.attributedPlaceholder = [[NSAttributedString alloc] initWithString:Localized(@"Enter Down Payment (KD)") attributes:@{NSForegroundColorAttributeName: color}];
     _downpaymentPercentageFld.attributedPlaceholder = [[NSAttributedString alloc] initWithString:Localized(@"Enter Down Payment (%)") attributes:@{NSForegroundColorAttributeName: color}];
-    _loanAmountFld.attributedPlaceholder = [[NSAttributedString alloc] initWithString:Localized(@"Enter Loan Amount") attributes:@{NSForegroundColorAttributeName: color}];
-    
+    _loanAmountFld.attributedPlaceholder = [[NSAttributedString alloc] initWithString:Localized(@"0") attributes:@{NSForegroundColorAttributeName: color1}];
     
     self.navigationController.navigationBar.barTintColor = [UIColor colorWithRed:19.0f/255.0f green:40.0f/255.0f blue:83.0f/255.0f alpha:1.0f];
     // barTintColor sets the background color
@@ -211,31 +209,33 @@
     // tintColor sets the buttons color of the navigation bar
     
     self.navigationController.navigationBar.translucent = NO;
+    
+    self.navigationItem.title = Localized(@"Re Loan calculator");
 
     // label
-    UILabel *tmpTitleLabel =[[UILabel alloc]initWithFrame:CGRectZero];
-    tmpTitleLabel.text = Localized(@"Re Loan calculator");
-    if ([[Utils getLanguage] isEqualToString:KEY_LANGUAGE_AR]) {
-        [tmpTitleLabel setFont:[UIFont fontWithName:@"DroidArabicKufi-Bold"size:20]];
-    }else{
-        [tmpTitleLabel setFont:[UIFont fontWithName:@"DroidSans-Bold" size:20]];
-    }
-    tmpTitleLabel.backgroundColor = [UIColor clearColor];
-    tmpTitleLabel.textColor = [UIColor colorWithRed:212.0f/255.0f green:175.0f/255.0f blue:42.0f/255.0f alpha:1.0f];
-    [tmpTitleLabel sizeToFit];
-    UIImage *image = [UIImage imageNamed: @"badge.png"];
-    UIImageView *imageView = [[UIImageView alloc] initWithImage: image];
-    
-    CGRect applicationFrame = CGRectMake(0, 0, 300, 40);
-    UIView * newView = [[UIView alloc] initWithFrame:applicationFrame] ;
-    [newView addSubview:imageView];
-    [newView addSubview:tmpTitleLabel];
-    tmpTitleLabel.center=newView.center;
-    imageView.frame = CGRectMake(150+(tmpTitleLabel.frame.size.width/2)+4, 10, 20, 20);
-    UIButton *btn = [[UIButton alloc] initWithFrame:CGRectMake(150+(tmpTitleLabel.frame.size.width/2)+4, 10, 20, 20)];
-    [btn addTarget:self action:@selector(clickForInfo:) forControlEvents:UIControlEventTouchUpInside];
-    [newView addSubview:btn];
-    self.navigationItem.titleView = newView;
+//    UILabel *tmpTitleLabel =[[UILabel alloc]initWithFrame:CGRectZero];
+//    tmpTitleLabel.text = Localized(@"Re Loan calculator");
+//    if ([[Utils getLanguage] isEqualToString:KEY_LANGUAGE_AR]) {
+//        [tmpTitleLabel setFont:[UIFont fontWithName:@"DroidArabicKufi-Bold"size:20]];
+//    }else{
+//        [tmpTitleLabel setFont:[UIFont fontWithName:@"DroidSans-Bold" size:20]];
+//    }
+//    tmpTitleLabel.backgroundColor = [UIColor clearColor];
+//    tmpTitleLabel.textColor = [UIColor colorWithRed:212.0f/255.0f green:175.0f/255.0f blue:42.0f/255.0f alpha:1.0f];
+//    [tmpTitleLabel sizeToFit];
+//    UIImage *image = [UIImage imageNamed: @"badge.png"];
+//    UIImageView *imageView = [[UIImageView alloc] initWithImage: image];
+//
+//    CGRect applicationFrame = CGRectMake(0, 0, 300, 40);
+//    UIView * newView = [[UIView alloc] initWithFrame:applicationFrame] ;
+//    [newView addSubview:imageView];
+//    [newView addSubview:tmpTitleLabel];
+//    tmpTitleLabel.center=newView.center;
+//    imageView.frame = CGRectMake(150+(tmpTitleLabel.frame.size.width/2)+4, 10, 20, 20);
+//    UIButton *btn = [[UIButton alloc] initWithFrame:CGRectMake(150+(tmpTitleLabel.frame.size.width/2)+4, 10, 20, 20)];
+//    [btn addTarget:self action:@selector(clickForInfo:) forControlEvents:UIControlEventTouchUpInside];
+//    [newView addSubview:btn];
+//    self.navigationItem.titleView = newView;
     
     
     
@@ -243,6 +243,51 @@
     
     [self textFldBoarders];
     [self paddingFlds];
+        [self shadow:_enterPropertyValue];
+        [self shadow:_downPaymentFld];
+        [self shadow:_downpaymentPercentageFld];
+        [self shadow:_loanAmountFld];
+        [self shadow:_graceYearsFld];
+        [self shadow:_graceMonthsFld];
+        [self shadow:_anualRateFld];
+        [self shadow:_slectPaymentModeFld];
+        [self shadow:_noOfpaymentsFld];
+        [self shadow:_repaymentYearsFld];
+        [self shadow:_repaymentMonthsFld];
+    
+    [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"btng.png"] forBarMetrics:UIBarMetricsDefault];
+
+    CAGradientLayer *gradientLayer = [CAGradientLayer layer];
+    gradientLayer.frame = self.navigationController.navigationBar.bounds;
+    
+    CGRect gradientFrame = self.navigationController.navigationBar.bounds;
+    gradientFrame.size.height += [UIApplication sharedApplication].statusBarFrame.size.height;
+    gradientLayer.frame = gradientFrame;
+    
+    gradientLayer.colors = @[ (__bridge id)[UIColor colorWithRed:16.0f/255.0f green:35.0f/255.0f blue:71.0f/255.0f alpha:1].CGColor,
+                              (__bridge id)[UIColor colorWithRed:31.0f/255.0f green:71.0f/255.0f blue:147.0f/255.0f alpha:1].CGColor ];
+    //    gradientLayer.startPoint = CGPointMake(1.0, 0);
+    //    gradientLayer.endPoint = CGPointMake(1.0, 0.5);
+    
+    UIGraphicsBeginImageContext(gradientLayer.bounds.size);
+    [gradientLayer renderInContext:UIGraphicsGetCurrentContext()];
+    UIImage *gradientImage1 = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    [self.navigationController.navigationBar setBackgroundImage:gradientImage1 forBarMetrics:UIBarMetricsDefault];
+    
+}
+
+- (UIImage *)imageFromLayer:(CALayer *)layer
+{
+    UIGraphicsBeginImageContext([layer frame].size);
+    
+    [layer renderInContext:UIGraphicsGetCurrentContext()];
+    UIImage *outputImage = UIGraphicsGetImageFromCurrentImageContext();
+    
+    UIGraphicsEndImageContext();
+    
+    return outputImage;
 }
 
 -(void)clickForInfo:(id)sender{
@@ -262,6 +307,14 @@
     // self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
     // tintColor sets the buttons color of the navigation bar
     self.navigationController.navigationBar.translucent = NO;
+    
+//    [self shadow:_downPaymentFld];
+//    [self shadow:_downpaymentPercentageFld];
+//    [self shadow:_loanAmountFld];
+//    [self shadow:_graceYearsFld];
+//    [self shadow:_graceMonthsFld];
+//    [self shadow:_anualRateFld];
+//    [self shadow:_slectPaymentModeFld];
 
 }
 - (void)customSetup
@@ -1131,7 +1184,7 @@
     _enterPropertyValue.attributedPlaceholder = [[NSAttributedString alloc] initWithString:Localized(@"Enter Property Value in KD") attributes:@{NSForegroundColorAttributeName: color}];
     _downPaymentFld.attributedPlaceholder = [[NSAttributedString alloc] initWithString:Localized(@"Enter Down Payment (KD)") attributes:@{NSForegroundColorAttributeName: color}];
     _downpaymentPercentageFld.attributedPlaceholder = [[NSAttributedString alloc] initWithString:Localized(@"Enter Down Payment (%)") attributes:@{NSForegroundColorAttributeName: color}];
-    _loanAmountFld.attributedPlaceholder = [[NSAttributedString alloc] initWithString:Localized(@"Enter Loan Amount") attributes:@{NSForegroundColorAttributeName: color}];
+    _loanAmountFld.attributedPlaceholder = [[NSAttributedString alloc] initWithString:Localized(@"0") attributes:@{NSForegroundColorAttributeName: color}];
     
     //    _noOfpaymentsFld.attributedPlaceholder = [[NSAttributedString alloc] initWithString:Localized(@"Number of payments") attributes:@{NSForegroundColorAttributeName: color}];
     
@@ -1167,7 +1220,7 @@
     _enterPropertyValue.attributedPlaceholder = [[NSAttributedString alloc] initWithString:Localized(@"Enter Property Value in KD") attributes:@{NSForegroundColorAttributeName: color}];
     _downPaymentFld.attributedPlaceholder = [[NSAttributedString alloc] initWithString:Localized(@"Enter Down Payment (KD)") attributes:@{NSForegroundColorAttributeName: color}];
     _downpaymentPercentageFld.attributedPlaceholder = [[NSAttributedString alloc] initWithString:Localized(@"Enter Down Payment (%)") attributes:@{NSForegroundColorAttributeName: color}];
-    _loanAmountFld.attributedPlaceholder = [[NSAttributedString alloc] initWithString:Localized(@"Enter Loan Amount") attributes:@{NSForegroundColorAttributeName: color}];
+    _loanAmountFld.attributedPlaceholder = [[NSAttributedString alloc] initWithString:Localized(@"0") attributes:@{NSForegroundColorAttributeName: color}];
 
 //    _noOfpaymentsFld.attributedPlaceholder = [[NSAttributedString alloc] initWithString:Localized(@"Number of payments") attributes:@{NSForegroundColorAttributeName: color}];
     
@@ -1229,7 +1282,7 @@
     
     valueStr = @"graceYear";
     
-    listArray = [[NSMutableArray alloc]initWithObjects:@"0",@"1",@"2",@"3",@"4",@"5", nil];
+    listArray = [[NSMutableArray alloc]initWithObjects:@"0",@"1",@"2", nil];
     
     [ActionSheetStringPicker showPickerWithTitle:Localized(@"Select Grace Year")
                                             rows:listArray
@@ -1595,7 +1648,7 @@
     _downpaymentPercentageFld.layer.borderWidth = 2.0f;
     _downpaymentPercentageFld.layer.cornerRadius = 15.0f;
 
-    _loanAmountFld.layer.borderColor = [UIColor whiteColor].CGColor;
+    _loanAmountFld.layer.borderColor = [UIColor clearColor].CGColor;
     _loanAmountFld.layer.borderWidth = 2.0f;
     _loanAmountFld.layer.cornerRadius = 15.0f;
 
@@ -1615,7 +1668,7 @@
     _repaymentMonthsFld.layer.borderWidth = 2.0f;
     _repaymentMonthsFld.layer.cornerRadius = 15.0f;
 
-    _anualRateFld.layer.borderColor = [UIColor whiteColor].CGColor;
+    _anualRateFld.layer.borderColor = [UIColor clearColor].CGColor;
     _anualRateFld.layer.borderWidth = 2.0f;
     _anualRateFld.layer.cornerRadius = 15.0f;
 
@@ -1623,7 +1676,7 @@
     _slectPaymentModeFld.layer.borderWidth = 2.0f;
     _slectPaymentModeFld.layer.cornerRadius = 15.0f;
 
-    _noOfpaymentsFld.layer.borderColor = [UIColor whiteColor].CGColor;
+    _noOfpaymentsFld.layer.borderColor = [UIColor clearColor].CGColor;
     _noOfpaymentsFld.layer.borderWidth = 2.0f;
     _noOfpaymentsFld.layer.cornerRadius = 15.0f;
     
@@ -1638,6 +1691,12 @@
 //    _label9.layer.cornerRadius = 10;_label9.clipsToBounds = YES;
 //    _label10.layer.cornerRadius = 10;_label10.clipsToBounds = YES;
 //    _label11.layer.cornerRadius = 10;_label11.clipsToBounds = YES;
+    
+//    _enterPropertyValue.layer.borderColor = [UIColor redColor].CGColor;
+//    _enterPropertyValue.layer.masksToBounds = false;
+//    _enterPropertyValue.layer.shadowColor = [UIColor blackColor].CGColor;
+//    _enterPropertyValue.layer.shadowOpacity = 50.0;
+//    _enterPropertyValue.layer.shadowRadius = 50.0;
     
 
 }
@@ -1804,12 +1863,10 @@
 
 -(void)shadow:(UITextField*)txtFld{
     
-    UIBezierPath *shadowPath = [UIBezierPath bezierPathWithRect:txtFld.bounds];
-    txtFld.layer.masksToBounds = YES;
-    txtFld.layer.shadowColor = [UIColor redColor].CGColor;
-    txtFld.layer.shadowOffset = CGSizeMake(0.0f, 5.0f);
-    txtFld.layer.shadowOpacity = 0.5f;
-    txtFld.layer.shadowPath = shadowPath.CGPath;
+    txtFld.layer.cornerRadius = txtFld.frame.size.height/2-15;
+    txtFld.clipsToBounds = false;
+    txtFld.layer.shadowOpacity=0.2;
+    txtFld.layer.shadowOffset =CGSizeMake(0, 5);
 
 }
 

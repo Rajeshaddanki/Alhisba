@@ -33,7 +33,7 @@
                     </textAttributes>
                     <items>
                         <navigationItem title="Title" id="ipc-Wd-nyH">
-                            <barButtonItem key="leftBarButtonItem" image="close" id="Zl9-Tc-BWP">
+                            <barButtonItem key="leftBarButtonItem" title="Item" image="close-white.png" id="Zl9-Tc-BWP">
                                 <connections>
                                     <action selector="close:" destination="-1" id="S0N-9V-l9w"/>
                                 </connections>
@@ -82,6 +82,6 @@
         </view>
     </objects>
     <resources>
-        <image name="close" width="20" height="20"/>
+        <image name="close-white.png" width="30" height="30"/>
     </resources>
 </document>

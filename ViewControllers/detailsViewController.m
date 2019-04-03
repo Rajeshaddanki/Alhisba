@@ -25,14 +25,22 @@
     
     [super viewDidLoad];
     
+    self.navigationController.navigationBar.barTintColor = [UIColor colorWithRed:19.0f/255.0f green:40.0f/255.0f blue:83.0f/255.0f alpha:1.0f];
     
-    [self.navigationController.navigationBar setHidden:YES];
+    self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
+    // tintColor sets the buttons color of the navigation bar
+    
+    self.navigationController.navigationBar.translucent = NO;
+    
+ //   [self.navigationController.navigationBar setHidden:YES];
+    
+    self.navigationItem.title = Localized(@"Details");
     
     if ([[Utils getLanguage] isEqualToString:KEY_LANGUAGE_AR]) {
-        self.navigationController.navigationBar.titleTextAttributes = [NSDictionary dictionaryWithObjectsAndKeys:[UIColor whiteColor],NSForegroundColorAttributeName,[UIFont boldSystemFontOfSize:20],NSFontAttributeName,nil];
+        self.navigationController.navigationBar.titleTextAttributes = [NSDictionary dictionaryWithObjectsAndKeys:[UIColor colorWithRed:212.0f/255.0f green:175.0f/255.0f blue:42.0f/255.0f alpha:1.0f],NSForegroundColorAttributeName,[UIFont boldSystemFontOfSize:20],NSFontAttributeName,nil];
     }
     else{
-        self.navigationController.navigationBar.titleTextAttributes = [NSDictionary dictionaryWithObjectsAndKeys:[UIColor whiteColor],NSForegroundColorAttributeName,[UIFont boldSystemFontOfSize:20],NSFontAttributeName,nil];
+        self.navigationController.navigationBar.titleTextAttributes = [NSDictionary dictionaryWithObjectsAndKeys:[UIColor colorWithRed:212.0f/255.0f green:175.0f/255.0f blue:42.0f/255.0f alpha:1.0f],NSForegroundColorAttributeName,[UIFont boldSystemFontOfSize:20],NSFontAttributeName,nil];
     }
     
     if ([[Utils getLanguage] isEqualToString:KEY_LANGUAGE_AR]) {
@@ -43,6 +51,7 @@
         [backBtn addTarget:self action:@selector(goBack) forControlEvents:UIControlEventTouchUpInside];
         UIBarButtonItem *customBarRightBtn = [[UIBarButtonItem alloc] initWithCustomView:backBtn];
         self.navigationItem.leftBarButtonItems = [NSArray arrayWithObjects:customBarRightBtn,nil];
+        
     }
     else{
         backBtn = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -54,7 +63,7 @@
     }
     
     menuBtn = [[UIButton alloc] init];
-    [menuBtn setBackgroundImage:[UIImage imageNamed:@"shareWhite.png"] forState:UIControlStateNormal];
+    [menuBtn setBackgroundImage:[UIImage imageNamed:@"Share.png"] forState:UIControlStateNormal];
     menuBtn.frame = CGRectMake(0, 0, 30, 30);
     [menuBtn addTarget:self action:@selector(shareBtnTapped) forControlEvents:UIControlEventTouchUpInside];
     UIBarButtonItem *backBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:menuBtn];
@@ -92,6 +101,28 @@
 
 }
 
+-(void)viewWillAppear:(BOOL)animated{
+    
+    if ([[Utils getLanguage] isEqualToString:KEY_LANGUAGE_AR]) {
+        
+        backBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        [backBtn setImage:[UIImage imageNamed:@"back-whiteright.png"] forState:UIControlStateNormal];
+        backBtn.frame = CGRectMake(0, 0, 20, 20);
+        [backBtn addTarget:self action:@selector(goBack) forControlEvents:UIControlEventTouchUpInside];
+        UIBarButtonItem *customBarRightBtn = [[UIBarButtonItem alloc] initWithCustomView:backBtn];
+        self.navigationItem.leftBarButtonItems = [NSArray arrayWithObjects:customBarRightBtn,nil];
+        
+    }
+    else{
+        backBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        [backBtn setImage:[UIImage imageNamed:@"back-white.png"] forState:UIControlStateNormal];
+        backBtn.frame = CGRectMake(0, 0, 20, 20);
+        [backBtn addTarget:self action:@selector(goBack) forControlEvents:UIControlEventTouchUpInside];
+        UIBarButtonItem *customBarRightBtn = [[UIBarButtonItem alloc] initWithCustomView:backBtn];
+        self.navigationItem.leftBarButtonItems = [NSArray arrayWithObjects:customBarRightBtn,nil];
+    }
+}
+
 -(void)shareBtnTapped{
     
 //    WhatsAppMessage *whatsappMsg = [[WhatsAppMessage alloc] initWithMessage:[_detailsDic  valueForKey:@"link"] forABID:@"Alhisba"];
@@ -124,6 +155,7 @@
 
 -(void)goBack{
     
+   // [self.navigationController.navigationBar setHidden:YES];
     [self.navigationController popViewControllerAnimated:NO];
 }
 

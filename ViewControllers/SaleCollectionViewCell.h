@@ -18,6 +18,19 @@ NS_ASSUME_NONNULL_BEGIN
 @property (weak, nonatomic) IBOutlet UILabel *landlbl;
 @property (weak, nonatomic) IBOutlet UILabel *landInfo;
 
+@property (weak, nonatomic) IBOutlet UILabel *priceLbl;
+
+@property (weak, nonatomic) IBOutlet UILabel *areaSizeLbl;
+
+@property (weak, nonatomic) IBOutlet UILabel *price;
+
+@property (weak, nonatomic) IBOutlet UILabel *areaSize;
+
+@property (weak, nonatomic) IBOutlet UIView *areaTitleBackView;
+
+@property (weak, nonatomic) IBOutlet UILabel *areaTitleLbl;
+
+
 @end
 
 NS_ASSUME_NONNULL_END
